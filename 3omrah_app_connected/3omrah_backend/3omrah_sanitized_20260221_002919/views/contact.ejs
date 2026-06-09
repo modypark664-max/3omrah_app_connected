@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+  <title><%= title || 'راسلنا' %></title>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --color-primary: #5D5FEF;
+  --color-secondary: #818cf8;
+  --color-accent: #c7d2fe;
+  --color-background: #F8F9FE;
+  --color-white: #ffffff;
+  --font-tajawal: 'Tajawal', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-tajawal);
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  direction: rtl !important;
+  text-align: right;
+  overflow-x: hidden;
+  text-decoration: none !important;
+  line-height: 1.6;
+}
+
+.contact-section * {
+  box-sizing: border-box;
+  direction: rtl;
+}
+
+.contact-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contact-section a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Remove conflicting header styles - let navbar handle its own styling */
+
+/* CSS from section:contact */
+.contact-section {
+    padding-top: 60px;
+    padding-bottom: 42px;
+    direction: rtl;
+  }
+
+  /* Top CTA card (call now) */
+  .contact-cta {
+    background: var(--color-white);
+    border: 1px solid rgba(93, 95, 239, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .contact-cta-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    text-align: center;
+  }
+  .cta-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #eef2ff;
+    border: 2px solid var(--color-secondary);
+    color: var(--color-primary);
+    flex: 0 0 auto;
+  }
+  .cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cta-title {
+    font-weight: 700;
+    color: var(--color-primary);
+    font-size: 18px;
+  }
+  .cta-phone {
+    font-weight: 800;
+    color: #2ba24c; /* green like screenshot */
+    font-size: 24px;
+    letter-spacing: 0.5px;
+    direction: ltr;
+  }
+  .cta-phone a {
+    color: inherit;
+  }
+  .cta-hours {
+    font-size: 13px;
+    color: rgba(93, 95, 239, 0.75);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .contact-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 600px;
+    direction: rtl;
+  }
+
+  .contact-bg-map {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    z-index: 1;
+    pointer-events: none; /* Ensure form is clickable */
+  }
+
+  /* Leaflet map container */
+  #contact-map {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    z-index: 1;
+    pointer-events: none; /* Ensure form is clickable */
+  }
+
+  .contact-form-container {
+    position: relative;
+    z-index: 2;
+    background-color: var(--color-primary);
+    border-radius: 20px;
+    box-shadow: 10px 29px 25px 0px rgba(0, 0, 0, 0.25);
+    padding: 40px 30px 35px;
+    width: 500px;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  .contact-title {
+    font-family: var(--font-tajawal);
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--color-secondary);
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin: 0 0 25px 0;
+    text-align: center;
+  }
+
+  .contact-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-label {
+    font-family: var(--font-tajawal);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--color-secondary);
+    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+    text-align: right;
+  }
+
+  .form-input,
+  .form-textarea {
+    background-color: var(--color-white);
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(93, 95, 239, 0.2);
+    padding: 12px 16px;
+    font-family: var(--font-tajawal);
+    font-size: 14px;
+    color: var(--color-primary);
+    text-align: right;
+    width: 100%;
+    direction: rtl;
+  }
+  
+  .form-input::placeholder,
+  .form-textarea::placeholder {
+    color: rgba(93, 95, 239, 0.5);
+    text-align: right;
+    direction: rtl;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0px 4px 12px 0px rgba(129, 140, 248, 0.3);
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .submit-btn {
+    background-color: var(--color-secondary);
+    color: var(--color-white);
+    font-family: var(--font-tajawal);
+    font-weight: 700;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+    align-self: center;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    background-color: #6366f1;
+  }
+  
+  @media (max-width: 768px) {
+    .contact-wrapper {
+        min-height: auto;
+        padding: 20px 0;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .contact-bg-map {
+        display: none;
+    }
+    #contact-map {
+        position: static;
+        width: 100%;
+        height: 300px;
+        border-radius: 15px;
+        z-index: 1;
+        pointer-events: auto;
+        order: 1;
+        margin-bottom: 20px;
+    }
+    .contact-form-container {
+        position: static;
+        width: 100%;
+        padding: 25px 15px;
+        justify-content: center;
+        order: 2;
+    }
+    .contact-title {
+        font-size: 24px;
+    }
+    .form-label {
+        font-size: 14px;
+    }
+    .form-input, .form-textarea {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+    .form-textarea {
+        min-height: 80px;
+    }
+    .submit-btn {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+  }
+@media (max-width: 768px) {
+  .login-btn {
+    display: none !important;
+  }
+  
+  .user-menu {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: block !important;
+  }
+  
+  .hamburger-menu {
+    display: flex;
+  }
+}
+    
+    /* Hide hamburger menu on desktop for contact page */
+.hamburger-menu {
+  display: none !important;
+}
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: flex !important;
+  }
+}
+
+/* WhatsApp floating action button */
+.whatsapp-fab {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.whatsapp-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.24);
+}
+    </style>
+</head>
+<body>
+        <%-include("navbar")%>
+  <section id="section-contact" class="contact-section">
+  <div class="container">
+    <!-- Top CTA (call now) -->
+    <div class="contact-cta" aria-label="معلومات التواصل السريع">
+      <div class="contact-cta-inner">
+        <div class="cta-icon" aria-hidden="true">
+          <!-- Headset icon -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+            <path d="M4 12C4 7.582 7.582 4 12 4s8 3.582 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 12v4a2 2 0 0 0 2 2h2v-6H8a2 2 0 0 0-2 2Zm12 0v4a2 2 0 0 1-2 2h-2v-6h2a2 2 0 0 1 2 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="cta-text">
+          <div class="cta-title">للحجز اتصل الآن؟</div>
+          <div class="cta-phone">
+            <a href="tel:<%= phone %>" dir="ltr"><%= phone %></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-wrapper">
+      <!-- Interactive Leaflet Map -->
+      <div id="contact-map"></div>
+      <div class="contact-form-container">
+        <h2 class="contact-title">راسلنا</h2>
+        <form class="contact-form" method="POST" action="/contact">
+          <div class="form-group">
+            <label for="fullName" class="form-label">الاسم بالكامل</label>
+            <input type="text" id="fullName" name="fullName" class="form-input" placeholder="أدخل اسمك الكامل" required>
+          </div>
+          <div class="form-group">
+            <label for="email" class="form-label">البريد الإلكتروني</label>
+            <input type="email" id="email" name="email" class="form-input" placeholder="أدخل بريدك الإلكتروني" required>
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber" class="form-label">رقم الهاتف</label>
+            <input type="tel" id="phoneNumber" name="phoneNumber" class="form-input" placeholder="01xxxxxxxxx (11 رقم)" required maxlength="11" dir="ltr">
+            <div class="help-text">أدخل رقم الهاتف مكون من 11 رقم بالضبط</div>
+          </div>
+          <div class="form-group">
+            <label for="message" class="form-label">الرسالة</label>
+            <textarea id="message" name="message" class="form-textarea" rows="4" placeholder="اكتب رسالتك هنا..." required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">إرسال الرسالة</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  </section>
+
+<!-- Floating WhatsApp Button -->
+<% 
+  const rawWa = (contactSettings && contactSettings.whatsappNumber) ? contactSettings.whatsappNumber : '01225993443';
+  // Build wa.me link: keep if already includes country code; otherwise prefix 2 (Egypt) if number looks local
+  const cleaned = (rawWa || '').toString().replace(/\D/g, '');
+  const hasCountry = cleaned.startsWith('00') || cleaned.startsWith('2') || cleaned.startsWith('20');
+  const waNumber = hasCountry ? cleaned.replace(/^00/, '') : ('2' + cleaned);
+  const waLink = `https://wa.me/${waNumber}`;
+%>
+<a href="<%= waLink %>" target="_blank" rel="noopener" class="whatsapp-fab" aria-label="تواصل عبر واتساب">
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .13 5.36.13 11.93c0 2.1.55 4.16 1.6 5.97L0 24l6.29-1.66a11.86 11.86 0 0 0 5.77 1.49h.01c6.57 0 11.93-5.36 11.93-11.93 0-3.19-1.24-6.2-3.48-8.42ZM12.07 21.3h-.01a9.35 9.35 0 0 1-4.77-1.31l-.34-.2-3.73.99.99-3.64-.22-.37a9.35 9.35 0 0 1-1.42-4.97c0-5.16 4.2-9.36 9.36-9.36 2.5 0 4.85.97 6.62 2.74a9.3 9.3 0 0 1 2.74 6.62c0 5.16-4.2 9.36-9.36 9.36Zm5.15-7.03c-.28-.14-1.66-.82-1.91-.92-.26-.1-.44-.14-.63.14-.18.28-.73.91-.89 1.1-.17.2-.33.21-.61.07-.28-.14-1.19-.44-2.27-1.41-.84-.75-1.41-1.68-1.58-1.96-.16-.28-.02-.43.12-.57.12-.12.28-.33.42-.49.14-.16.19-.28.28-.46.09-.18.05-.35-.02-.49-.07-.14-.63-1.52-.86-2.08-.23-.55-.46-.48-.63-.49-.16-.01-.35-.01-.54-.01s-.49.07-.75.35c-.26.28-1 1-1 2.44 0 1.43 1.02 2.81 1.16 3 .14.19 2 3.06 4.86 4.29.68.29 1.22.46 1.64.59.69.22 1.32.19 1.82.11.56-.08 1.66-.68 1.89-1.33.23-.65.23-1.21.16-1.33-.07-.12-.25-.19-.53-.33Z"/>
+  </svg>
+</a>
+
+<%- include('bottom_app_navbar') %>
+
+
+<script>
+// Initialize the map when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Phone number validation for contact form
+    const phoneInput = document.getElementById('phoneNumber');
+    const contactForm = document.querySelector('form');
+    
+    if (phoneInput) {
+        // Real-time phone number formatting - only allow digits
+        phoneInput.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Limit to 11 characters
+            if (this.value.length > 11) {
+                this.value = this.value.slice(0, 11);
+            }
+            
+            // Update visual feedback
+            if (this.value.length === 11) {
+                this.style.borderColor = '#4CAF50';
+            } else {
+                this.style.borderColor = this.value.length === 0 ? '' : '#f44336';
+            }
+        });
+    }
+    
+    if (contactForm) {
+        // Form validation on submit
+        contactForm.addEventListener('submit', function(e) {
+            const phonePattern = /^[0-9]{11}$/;
+            
+            if (!phonePattern.test(phoneInput.value)) {
+                e.preventDefault();
+                alert('رقم الهاتف يجب أن يكون 11 رقم بالضبط');
+                phoneInput.focus();
+                return false;
+            }
+        });
+    }
+    
+    // Check if map container exists
+    const mapContainer = document.getElementById('contact-map');
+    if (!mapContainer) return;
+    
+    // Different map settings for mobile vs desktop
+    const isMobile = window.innerWidth <= 768;
+    
+    // Initialize map centered on Mecca, Saudi Arabia
+    var map = L.map('contact-map', {
+        center: [21.4225, 39.8262], // Mecca coordinates
+        zoom: isMobile ? 12 : 13,
+        zoomControl: isMobile,
+        scrollWheelZoom: isMobile,
+        doubleClickZoom: isMobile,
+        dragging: isMobile,
+        touchZoom: isMobile,
+        boxZoom: false,
+        keyboard: isMobile
+    });
+
+    // Add OpenStreetMap tiles (no API key required)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add a marker for Mecca
+    var meccaIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: '<div style="background-color: #5D5FEF; width: 30px; height: 30px; border-radius: 50%; border: 3px solid #818cf8; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+
+    L.marker([21.4225, 39.8262], {icon: meccaIcon})
+        .addTo(map)
+        .bindPopup('<div style="text-align: center; font-family: Tajawal; direction: rtl;"><strong>مكة المكرمة</strong><br>المملكة العربية السعودية</div>');
+    
+    // Handle window resize to refresh map
+    window.addEventListener('resize', function() {
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 100);
+    });
+});
+</script>
+
+<%-include("footer")%>
+<style>
+/* Ensure footer is full width and links have no underline */
+.site-footer {
+  width: 100vw !important;
+  min-width: 100vw !important;
+  margin: 0 !important;
+  left: 0;
+  right: 0;
+  position: relative;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+.site-footer .footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.site-footer a {
+  text-decoration: none !important;
+}
+</style>
+</body>
+</html>

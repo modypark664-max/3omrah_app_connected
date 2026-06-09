@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>لوحة التحكم - منصة العمرة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1E5470;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(30, 84, 112, 0.3);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .admin-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .user-info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(30, 84, 112, 0.1);
+            border: 1px solid rgba(52, 114, 156, 0.1);
+        }
+        
+        .user-info-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-details h2 {
+            color: #1E5470;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-details p {
+            color: #64748b;
+            margin: 3px 0;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .role-admin {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .role-partner {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .role-user {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .permissions-overview {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .permissions-overview h3 {
+            color: #1E5470;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .permission-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #374151;
+        }
+        
+        .permission-item.active {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #16a34a;
+            color: #166534;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(30, 84, 112, 0.1);
+            border: 1px solid rgba(52, 114, 156, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(30, 84, 112, 0.15);
+        }
+        
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: #34729C;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1E5470;
+        }
+        
+        .feature-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .action-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .action-button:hover {
+            transform: translateX(-3px);
+            box-shadow: 0 4px 15px rgba(52, 114, 156, 0.3);
+        }
+        
+        .action-button.disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .no-access-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px dashed #e2e8f0;
+        }
+        
+        .no-access-message .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #d1d5db;
+        }
+        
+        .feature-card.restricted {
+            opacity: 0.5;
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        
+        .restricted-overlay {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .restricted-overlay::before {
+            content: "🔒 غير مصرح";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(107, 114, 128, 0.9);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-info-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">🕋</div>
+                <div class="admin-title">لوحة التحكم</div>
+            </div>
+            <div class="admin-actions">
+                <% if (user.role === 'admin' && (user.permissions?.includes('full_admin_access') || !user.permissions)) { %>
+                    <a href="/admin/dashboard" class="btn btn-primary">لوحة التحكم الكاملة</a>
+                <% } %>
+                <a href="/" class="btn btn-primary">العودة للموقع</a>
+                <a href="/logout" class="btn btn-primary">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- User Information Card -->
+        <div class="user-info-card">
+            <div class="user-info-header">
+                <div class="user-avatar">
+                    <%= user.username.charAt(0).toUpperCase() %>
+                </div>
+                <div class="user-details">
+                    <h2>مرحباً، <%= user.username %></h2>
+                    <p>رقم الهاتف: <%= user.phoneNumber %></p>
+                    <p>تاريخ التسجيل: <%= new Date(user.createdAt).toLocaleDateString('ar-EG') %></p>
+                    <div class="role-badge role-<%= user.role %>">
+                        <%= user.role === 'admin' ? 'مدير' : user.role === 'partner' ? 'شريك' : 'مستخدم' %>
+                    </div>
+                </div>
+            </div>
+            
+            <% if (user.permissions && user.permissions.length > 0) { %>
+            <div class="permissions-overview">
+                <h3>الصلاحيات المتاحة (<%= user.permissions.length %>)</h3>
+                <div class="permissions-grid">
+                    <% user.permissions.forEach(permission => { %>
+                        <div class="permission-item active">
+                            <%= permissionTranslations[permission] || permission %>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+            <% } else if (user.role === 'admin') { %>
+            <div class="permissions-overview">
+                <h3>صلاحيات المدير الكاملة</h3>
+                <p>لديك صلاحية الوصول إلى جميع ميزات النظام.</p>
+            </div>
+            <% } %>
+        </div>
+
+        <!-- Quick Stats (if user has view permissions) -->
+        <% if (user.role === 'admin' || user.permissions?.includes('view_dashboard_stats') || user.permissions?.includes('view_analytics')) { %>
+        <div class="quick-stats">
+            <% if (user.permissions?.includes('view_all_cards') || user.permissions?.includes('add_card') || user.role === 'admin') { %>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats?.totalCards || 0 %></div>
+                <div class="stat-label">إجمالي البطاقات</div>
+            </div>
+            <% } %>
+            
+            <% if (user.permissions?.includes('view_users') || user.role === 'admin') { %>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats?.totalUsers || 0 %></div>
+                <div class="stat-label">إجمالي المستخدمين</div>
+            </div>
+            <% } %>
+            
+            <% if (user.permissions?.includes('view_reservations') || user.role === 'admin') { %>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats?.totalReservations || 0 %></div>
+                <div class="stat-label">إجمالي الحجوزات</div>
+            </div>
+            <% } %>
+            
+            <% if (user.permissions?.includes('view_partners') || user.role === 'admin') { %>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats?.totalPartners || 0 %></div>
+                <div class="stat-label">الشركاء المسجلون</div>
+            </div>
+            <% } %>
+        </div>
+        <% } %>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <!-- Card Management -->
+            <% if (user.permissions?.includes('add_card') || user.permissions?.includes('edit_card') || user.permissions?.includes('delete_card') || user.permissions?.includes('view_all_cards') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🎫</div>
+                    <div class="feature-title">إدارة البطاقات</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('add_card') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#add-card" class="action-button">
+                            ➕ إضافة بطاقة جديدة
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('view_all_cards') || user.permissions?.includes('edit_card') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#view-cards" class="action-button">
+                            👁️ عرض جميع البطاقات
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('approve_card') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#partner-cards" class="action-button">
+                            ✅ الموافقة على بطاقات الشركاء
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- User Management -->
+            <% if (user.permissions?.includes('view_users') || user.permissions?.includes('edit_users') || user.permissions?.includes('delete_users') || user.permissions?.includes('manage_user_permissions') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">إدارة المستخدمين</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('view_users') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#all-users" class="action-button">
+                            👁️ عرض المستخدمين
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('manage_user_permissions') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#all-users" class="action-button">
+                            🔐 إدارة الصلاحيات
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('edit_users') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#all-users" class="action-button">
+                            ✏️ تعديل بيانات المستخدمين
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Partner Management -->
+            <% if (user.permissions?.includes('view_partners') || user.permissions?.includes('verify_partners') || user.permissions?.includes('suspend_partners') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🤝</div>
+                    <div class="feature-title">إدارة الشركاء</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('view_partners') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#partners" class="action-button">
+                            👁️ عرض الشركاء
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('verify_partners') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#partners" class="action-button">
+                            ✅ تفعيل الشركاء الجدد
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('suspend_partners') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#partners" class="action-button">
+                            ⏸️ إيقاف الشركاء
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Reservation Management -->
+            <% if (user.permissions?.includes('view_reservations') || user.permissions?.includes('verify_payments') || user.permissions?.includes('cancel_payments') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-title">إدارة الحجوزات</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('view_reservations') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#reservations" class="action-button">
+                            👁️ عرض الحجوزات
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('verify_payments') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#reservations" class="action-button">
+                            💳 تأكيد المدفوعات
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('cancel_payments') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#reservations" class="action-button">
+                            ❌ إلغاء المدفوعات
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Content Management -->
+            <% if (user.permissions?.includes('manage_banners') || user.permissions?.includes('manage_hero_media') || user.permissions?.includes('manage_section_content') || user.permissions?.includes('manage_page_content') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-title">إدارة المحتوى</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('manage_banners') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#partner-banner" class="action-button">
+                            🏷️ إدارة الإعلانات
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('manage_hero_media') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#hero-media" class="action-button">
+                            🎬 إدارة وسائط الواجهة
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('manage_section_content') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#section-content" class="action-button">
+                            📄 إدارة أقسام الصفحة
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('manage_page_content') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#page-content" class="action-button">
+                            📝 إدارة نصوص الصفحات
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Settings Management -->
+            <% if (user.permissions?.includes('manage_contact_settings') || user.permissions?.includes('manage_about_settings') || user.permissions?.includes('manage_partner_tiers') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">⚙️</div>
+                    <div class="feature-title">إدارة الإعدادات</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('manage_contact_settings') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#contact-settings" class="action-button">
+                            📞 إعدادات التواصل
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('manage_about_settings') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#about-settings" class="action-button">
+                            ℹ️ إعدادات صفحة من نحن
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('manage_partner_tiers') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#partner-tiers" class="action-button">
+                            📊 إدارة مستويات الشركاء
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Analytics -->
+            <% if (user.permissions?.includes('view_analytics') || user.permissions?.includes('view_dashboard_stats') || user.role === 'admin') { %>
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">التقارير والإحصائيات</div>
+                </div>
+                <div class="feature-actions">
+                    <% if (user.permissions?.includes('view_analytics') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#analytics" class="action-button">
+                            📈 عرض التحليلات
+                        </a>
+                    <% } %>
+                    <% if (user.permissions?.includes('view_dashboard_stats') || user.role === 'admin') { %>
+                        <a href="/admin/dashboard#stats" class="action-button">
+                            📊 إحصائيات عامة
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+
+        <!-- No Access Message -->
+        <% if (!user.permissions || user.permissions.length === 0) { %>
+            <% if (user.role !== 'admin') { %>
+            <div class="no-access-message">
+                <div class="icon">🔒</div>
+                <h3>لا توجد صلاحيات</h3>
+                <p>لم يتم منحك أي صلاحيات إدارية حالياً. يرجى الاتصال بالمدير لطلب الصلاحيات المناسبة.</p>
+            </div>
+            <% } %>
+        <% } %>
+    </div>
+
+    <script>
+        // Add any interactive functionality here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show a welcome message
+            console.log('مرحباً بك في لوحة التحكم');
+            
+            // Add click tracking for action buttons
+            document.querySelectorAll('.action-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    console.log('تم النقر على:', this.textContent.trim());
+                });
+            });
+        });
+    </script>
+</body>
+</html>

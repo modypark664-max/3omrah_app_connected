@@ -1,0 +1,351 @@
+<div class="footer">
+  <footer id="footer" class="site-footer">
+    <div class="footer-container">
+      <div class="footer-main">
+        <div class="footer-logo-area">
+          <div class="logo-img">
+            <a href="/"><img src="/imgs/logo.png" alt="" /></a><br /><br />
+          </div>
+          <p class="footer-description">
+            رحلة عمرة المصرية تقدم لك أفضل خدمات العمرة لضمان رحلة مريحة ومميزة،
+            مع باقات متكاملة تشمل الإقامة، النقل، والإرشاد الديني.
+          </p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>روابط السريعة</h4>
+            <ul>
+              <li><a href="/">الصفحة الرئيسية</a></li>
+              <li><a href="<%= privacyPolicyUrl || '/privacy' %>">سياسة الخصوصية</a></li>
+              <li><a href="/contact">اتصل بنا</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4>معلومات التواصل</h4>
+            <ul>
+              <a
+                class="footer-cta"
+                href="tel:<%= phone %>"
+                aria-label="اتصل بنا <%= phone %>"
+              >
+                <span class="cta-emoji" aria-hidden="true">📞</span>
+                <span class="cta-text" dir="ltr"><%= phone %></span>
+              </a>
+              <a
+                class="footer-cta"
+                href="mailto:<%= email %>"
+                aria-label="راسلنا عبر البريد"
+              >
+                <span class="cta-emoji" aria-hidden="true">✉️</span>
+                <span class="cta-text"><%= email %></span>
+              </a>
+              <a
+                class="footer-cta"
+                href="https://www.facebook.com/profile.php?id=61582108682152"
+                target="_blank"
+                rel="noopener"
+                aria-label="تابعنا على فيسبوك"
+              >
+                <span class="cta-emoji" aria-hidden="true">📘</span>
+                <span class="cta-text">تابعنا على فيسبوك</span>
+              </a>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4>موارد</h4>
+            <ul>
+              <li><a href="#umrah-packages">باقات العمرة</a></li>
+              <li><a href="#internal-trips">الرحلات الداخلية</a></li>
+              <li><a href="#external-trips">الرحلات الخارجية</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <hr class="footer-divider" />
+      <div class="footer-bottom">
+        <p class="copyright">
+          Copyright © 2006 - 2025 Compass | All Rights Reserved
+        </p>
+        <div class="social-media">
+          <!-- <a href="#" aria-label="Youtube" class="social-icon">
+            <img src="/imgs/YT.png" alt="" />
+          </a> -->
+          <!-- <a href="#" aria-label="Twitter" class="social-icon">
+            <img src="/imgs/TW.png" alt="" />
+          </a> -->
+          <a href="https://www.facebook.com/profile.php?id=61582108682152" aria-label="Facebook" class="social-icon">
+            <img src="/imgs/FB.png" alt="" />
+          </a>
+          <!-- <a href="#" aria-label="Instagram" class="social-icon">
+            <img src="/imgs/IG.png" alt="" />
+          </a> -->
+        </div>
+      </div>
+
+      <!-- Footer CTA row: phone, email, Google Play -->
+      <div
+        class="footer-cta-row"
+        role="contentinfo"
+        aria-label="روابط التواصل والتنزيل"
+      >
+        <a
+          class="footer-cta play"
+          href="https://play.google.com/"
+          target="_blank"
+          rel="noopener"
+          aria-label="تطبيق جوجل بلاي"
+        >
+          <img
+            style="background-color: white; padding: 0 5px"
+            class="play-badge"
+            src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Google_Play_2022_logo.svg"
+            alt="Get it on Google Play"
+          />
+        </a>
+      </div>
+    </div>
+  </footer>
+</div>
+<style>
+  footer {
+    position: relative !important;
+    bottom: 0 !important;
+    width: 100%;
+    direction: ltr !important;
+  }
+
+  .footer {
+    position: relative !important;
+    bottom: 0 !important;
+    width: 100%;
+    margin-bottom: 0 !important;
+  }
+
+  .site-footer {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 60px 0;
+    direction: ltr !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .footer-container {
+    width: 100% !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+  }
+
+  .footer-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    margin-bottom: 40px;
+    direction: ltr !important;
+    width: 100%;
+  }
+  .footer-logo-area {
+    max-width: 330px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  .footer-logo-box {
+    background-color: var(--color-white);
+    border-radius: 10px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+    padding: 14px 28px;
+    margin-bottom: 20px;
+    display: flex;
+  }
+
+  .logo-img {
+    display: flex;
+    justify-content: flex-start; /* logo sticks to start */
+    align-items: flex-start;
+    margin-bottom: 20px; /* space before the description */
+    img {
+      width: 200px;
+    }
+  }
+
+  .footer-logo-text {
+    font-family: var(--font-kufam);
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--color-primary);
+  }
+  .footer-description {
+    font-family: var(--font-nunito);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.36;
+    color: var(--color-accent);
+    text-align: right !important;
+  }
+  .footer-links {
+    display: flex;
+    gap: 80px;
+  }
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .footer-column h4 {
+    font-family: var(--font-tajawal);
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .footer-column ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .footer-column a {
+    font-family: var(--font-tajawal);
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-accent);
+    transition: color 0.3s ease;
+  }
+  .footer-column a:hover {
+    color: var(--color-white);
+  }
+  .footer-divider {
+    border: none;
+    height: 1px;
+    background-color: var(--color-white);
+    opacity: 0.5;
+    margin: 25px 0;
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    direction: ltr !important;
+  }
+  .copyright {
+    font-family: var(--font-nunito);
+    font-weight: 600;
+    font-size: 16px;
+    text-align: right !important;
+  }
+  .social-media {
+    display: flex;
+    gap: 11px;
+  }
+  .social-media a {
+    background-color: var(--color-white);
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+    text-decoration: none;
+  }
+  .social-media a:hover {
+    transform: scale(1.1);
+  }
+  .social-media a span {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 12px;
+    font-family: var(--font-tajawal);
+  }
+
+  /* Footer CTA row */
+  .footer-cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+  .footer-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .footer-cta:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+  }
+  .footer-cta .cta-emoji {
+    font-size: 18px;
+  }
+  .footer-cta .cta-text {
+    font-family: var(--font-tajawal);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .footer-cta.play {
+    padding: 0;
+    background: transparent;
+  }
+  .footer-cta.play .play-badge {
+    height: 42px;
+    width: auto;
+    display: block;
+  }
+
+  @media (max-width: 1024px) {
+    .footer-container {
+      padding: 0 15px !important;
+    }
+
+    .footer-main,
+    .footer-bottom {
+      flex-direction: column-reverse;
+      text-align: center;
+      gap: 40px;
+    }
+
+    .footer-links {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo-area {
+      margin: 0 auto;
+    }
+
+    .footer-cta-row {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-container {
+      padding: 0 10px !important;
+    }
+
+    .footer-links {
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .footer-column {
+      align-items: center;
+    }
+
+    .footer-cta-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>

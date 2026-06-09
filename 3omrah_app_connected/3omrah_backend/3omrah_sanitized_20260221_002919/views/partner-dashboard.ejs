@@ -1,0 +1,2966 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/home.css">
+    <link rel="stylesheet" href="/chat-inbox.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>لوحة تحكم الشريك - <%= title || 'منصة رحلة عمرة' %></title>
+</head>
+<body>
+    <section id="header-hero" class="header-hero-section">
+        <%- include('navbar') %>
+    </section>
+
+    <section class="partner-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>مرحباً بك، <%= user.companyName %></h1>
+                <p class="company-rep">ممثل الشركة: <%= user.companyRepresentative %></p>
+            </div>
+
+            <% if (!user.isVerified) { %>
+            <div class="verification-alert">
+                <div class="alert-content">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-text">
+                        <h3>حسابك في انتظار التحقق</h3>
+                        <p>يرجى التواصل مع الرقم التالي لإكمال عملية التحقق من حسابك:</p>
+                        <div class="contact-number">📞 01234567890</div>
+                        <p class="small-text">بعد التحقق ستتمكن من إضافة الرحلات والاستفادة من جميع المميزات</p>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <h3>إجمالي الرحلات</h3>
+                        <p id="totalTrips"><%= stats.totalTrips %> رحلة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>إجمالي الحجوزات</h3>
+                        <p id="totalBookings"><%= stats.totalBookings %> حجز</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>الإيرادات</h3>
+                        <p id="totalRevenue"><%= stats.totalRevenue.toLocaleString() %> جنيه</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3>في انتظار المراجعة</h3>
+                        <p id="pendingTrips"><%= stats.pendingTrips %> رحلة</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="dashboard-sidebar">
+                    <div class="sidebar-menu">
+                        <a href="#trips" class="menu-item active" onclick="showSection('trips')">
+                            <span class="menu-icon">🗺️</span>
+                            <span>إدارة الرحلات</span>
+                        </a>
+                        <a href="#bookings" class="menu-item" onclick="showSection('bookings')">
+                            <span class="menu-icon">📋</span>
+                            <span>الحجوزات</span>
+                        </a>
+                        <a href="#chat" class="menu-item" onclick="showSection('chat')">
+                            <span class="menu-icon">💬</span>
+                            <span>محادثات العملاء</span>
+                        </a>
+                        <a href="#reports" class="menu-item" onclick="showSection('reports')">
+                            <span class="menu-icon">📊</span>
+                            <span>التقارير</span>
+                        </a>
+                        <a href="#settings" class="menu-item" onclick="showSection('settings')">
+                            <span class="menu-icon">⚙️</span>
+                            <span>الإعدادات</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dashboard-main">
+                    <!-- Trips Section -->
+                    <div id="trips-section" class="section active">
+                        <div class="section-header">
+                            <h2>إدارة الرحلات</h2>
+                            <div class="trip-actions">
+                                <% if (user.isVerified) { %>
+                                <button class="btn-primary" onclick="showAddTripForm()">إضافة رحلة جديدة</button>
+                                <% } else { %>
+                                <button class="btn-disabled" disabled>إضافة رحلة جديدة (يتطلب التحقق)</button>
+                                <% } %>
+                                <button class="btn-secondary" onclick="refreshStats()">تحديث الإحصائيات</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Package Limits Info -->
+                        <div class="package-info">
+                            <div class="limit-display">
+                                <span class="label">الحد الأقصى للرحلات:</span>
+                                <span class="limit-value">
+                                    <% 
+                                    let displayLimit;
+                                    if (user.partnerPackage === 'premium') {
+                                        displayLimit = tierLimits.premium === -1 ? 'غير محدود' : tierLimits.premium + ' رحلة';
+                                    } else if (user.partnerPackage === 'professional') {
+                                        displayLimit = tierLimits.professional + ' رحلة';
+                                    } else {
+                                        displayLimit = tierLimits.basic + ' رحلات';
+                                    }
+                                    %>
+                                    <%= displayLimit %>
+                                </span>
+                                <span class="current-count">
+                                    (الحالي: <span id="currentTripCount"><%= stats.totalTrips %></span>)
+                                </span>
+                            </div>
+                        </div>
+                        
+                                                <!-- Add Trip Form (Modern Modal) -->
+                                                <div id="add-trip-form" class="add-trip-modal">
+                                                    <div class="modal-overlay" onclick="hideAddTripForm()"></div>
+                                                    <div class="modal-card">
+                                                        <div class="modal-header">
+                                                            <h3>إضافة رحلة جديدة</h3>
+                                                            <button class="modal-close" type="button" onclick="hideAddTripForm()">×</button>
+                                                        </div>
+                                                        <form id="partnerCardForm" enctype="multipart/form-data">
+                                                            <div class="modal-body">
+                                                                <!-- Basic Info -->
+                                                                <div class="form-section modern">
+                                                                    <h4>معلومات أساسية</h4>
+                                                                    <div class="form-grid three">
+                                                                        <div class="form-group with-icon">
+                                                                            <label>نوع الرحلة</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">🗺️</span>
+                                                                                <select name="type" required>
+                                                                                    <option value="">اختر النوع</option>
+                                                                                    <option value="omrah">عمرة</option>
+                                                                                    <option value="internal_tour">رحلة داخلية</option>
+                                                                                    <option value="external_tour">رحلة خارجية</option>
+                                                                                    <option value="7ag">رحلة حج</option>
+                                                                                    <option value="ramadan">رحلة رمضان</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>كود الرحلة</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">#</span>
+                                                                                <input type="text" name="code" placeholder="مثل: PRT-001" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>عنوان الرحلة</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">📝</span>
+                                                                                <input type="text" name="title" placeholder="أدخل عنوان جذاب للرحلة" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>نوع العرض</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">🏷️</span>
+                                                                                <select name="offer_type" id="partner_offer_type">
+                                                                                    <option value="">اختر نوع العرض</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>عدد الأيام</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">📅</span>
+                                                                                <input type="number" name="days" min="1" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>عدد الليالي</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">🌙</span>
+                                                                                <input type="number" name="nights" min="0" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>تاريخ السفر</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">🗓️</span>
+                                                                                <input type="date" name="travel_date" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>تاريخ انتهاء العرض</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">⏰</span>
+                                                                                <input type="date" name="offer_expiry_date" required>
+                                                                            </div>
+                                                                            <small style="color: #6b7280; font-size: 12px; margin-top: 5px; display: block;">
+                                                                                يجب أن يكون تاريخ انتهاء العرض قبل تاريخ السفر
+                                                                            </small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Travel Details -->
+                                                                <div class="form-section modern">
+                                                                    <h4>تفاصيل السفر</h4>
+                                                                    <div class="form-grid two">
+                                                                        <div class="form-group with-icon">
+                                                                            <label>مسار الذهاب</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">➡️</span>
+                                                                                <input type="text" name="going_route" placeholder="مثل: الرياض - مكة المكرمة" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon">
+                                                                            <label>مسار العودة</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">↩️</span>
+                                                                                <input type="text" name="returning_route" placeholder="مثل: المدينة المنورة - الرياض" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon full-width">
+                                                                            <label>شركة الطيران</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">✈️</span>
+                                                                                <input type="text" name="plane_company" placeholder="مثل: الخطوط السعودية" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group with-icon full-width">
+                                                                            <label>الشركة المنظمة</label>
+                                                                            <div class="input-wrap">
+                                                                                <span class="input-icon">🏢</span>
+                                                                                <input type="text" name="company" placeholder="اسم شركتك أو الشركة المنظمة (اختياري)" maxlength="100">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Media Uploads -->
+                                                                <div class="form-section modern">
+                                                                    <h4>الصور</h4>
+                                                                    <div class="form-grid two">
+                                                                        <div class="form-group full-width">
+                                                                            <label>الصورة الرئيسية</label>
+                                                                            <div id="thumbnailDropzone" class="dropzone" onclick="document.getElementById('thumbnailInput').click()">
+                                                                                <input id="thumbnailInput" type="file" name="thumbnail" accept="image/*" required hidden>
+                                                                                <div class="dz-placeholder">
+                                                                                    <span class="dz-icon">🖼️</span>
+                                                                                    <p>اسحب وأفلت الصورة هنا أو انقر للاختيار</p>
+                                                                                </div>
+                                                                                <img id="thumbnailPreview" class="dz-preview" alt="thumbnail preview" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group full-width">
+                                                                            <label>صور إضافية</label>
+                                                                            <div id="imagesDropzone" class="dropzone" onclick="document.getElementById('imagesInput').click()">
+                                                                                <input id="imagesInput" type="file" name="images" accept="image/*" multiple hidden>
+                                                                                <div class="dz-placeholder">
+                                                                                    <span class="dz-icon">🖼️🖼️</span>
+                                                                                    <p>اسحب وأفلت الصور هنا أو انقر للاختيار</p>
+                                                                                </div>
+                                                                                <div id="imagesPreview" class="dz-multi-preview"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Hotels -->
+                                                                <div class="form-section modern">
+                                                                    <div class="section-head-row">
+                                                                        <h4>معلومات الفنادق</h4>
+                                                                        <button type="button" class="add-btn ghost" onclick="addHotel()">+ إضافة فندق</button>
+                                                                    </div>
+                                                                    <div id="partner-hotels-container" class="cards-list">
+                                                                        <div class="hotel-item card">
+                                                                            <div class="hotel-grid">
+                                                                                <div class="form-group">
+                                                                                    <label>عدد الليالي</label>
+                                                                                    <input type="number" class="hotel-nights" min="1" required>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <label>اسم الفندق</label>
+                                                                                    <input type="text" class="hotel-name" required>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <label>نوع الفندق</label>
+                                                                                    <select class="hotel-type" required>
+                                                                                        <option value="">اختر النوع</option>
+                                                                                        <option value="اقتصادي">اقتصادي</option>
+                                                                                        <option value="سياحي">سياحي</option>
+                                                                                        <option value="VIP">VIP</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <label>الموقع</label>
+                                                                                    <input type="text" class="hotel-location" required>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <label>يشمل الطعام</label>
+                                                                                    <select class="hotel-food" required>
+                                                                                        <option value="">اختر</option>
+                                                                                        <option value="true">نعم</option>
+                                                                                        <option value="false">لا</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" class="remove-btn ghost" onclick="removeHotel(this)">حذف الفندق</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Housing -->
+                                                                <div class="form-section modern">
+                                                                    <div class="section-head-row">
+                                                                        <h4>خيارات الغرف والأسعار</h4>
+                                                                        <button type="button" class="add-btn ghost" onclick="addHousing()">+ إضافة خيار</button>
+                                                                    </div>
+                                                                    <div id="partner-housing-container" class="cards-list">
+                                                                        <div class="housing-item card">
+                                                                            <div class="housing-grid">
+                                                                                <div class="form-group">
+                                                                                    <label>نوع الغرفة</label>
+                                                                                    <input type="text" class="room-type" placeholder="مثل: غرفة مزدوجة" required>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <label>السعر (ج.م)</label>
+                                                                                    <input type="number" class="room-price" min="0" required>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" class="remove-btn ghost" onclick="removeHousing(this)">حذف</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Services Included -->
+                                                                <div class="form-section modern">
+                                                                    <h4>الخدمات المشمولة</h4>
+                                                                    <div id="included-services-container" class="services-container">
+                                                                        <div class="service-item">
+                                                                            <input type="text" name="included_services[]" placeholder="أدخل خدمة مشمولة" class="service-input">
+                                                                            <button type="button" class="remove-service-btn" onclick="removeServiceInput(this)">×</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button type="button" class="add-service-btn" onclick="addServiceInput('included-services-container', 'included_services[]', 'أدخل خدمة مشمولة')">+ إضافة خدمة</button>
+                                                                </div>
+
+                                                                <!-- Services Not Included -->
+                                                                <div class="form-section modern">
+                                                                    <h4>الخدمات غير المشمولة</h4>
+                                                                    <div id="not-included-services-container" class="services-container">
+                                                                        <div class="service-item">
+                                                                            <input type="text" name="not_included_services[]" placeholder="أدخل خدمة غير مشمولة" class="service-input">
+                                                                            <button type="button" class="remove-service-btn" onclick="removeServiceInput(this)">×</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button type="button" class="add-service-btn" onclick="addServiceInput('not-included-services-container', 'not_included_services[]', 'أدخل خدمة غير مشمولة')">+ إضافة خدمة</button>
+                                                                </div>
+
+                                                                <!-- Notes -->
+                                                                <div class="form-section modern">
+                                                                    <h4>ملاحظات مهمة</h4>
+                                                                    <div id="notes-container" class="services-container">
+                                                                        <div class="service-item">
+                                                                            <input type="text" name="notes[]" placeholder="أدخل ملاحظة مهمة" class="service-input">
+                                                                            <button type="button" class="remove-service-btn" onclick="removeServiceInput(this)">×</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button type="button" class="add-service-btn" onclick="addServiceInput('notes-container', 'notes[]', 'أدخل ملاحظة مهمة')">+ إضافة ملاحظة</button>
+                                                                </div>
+
+                                                                <!-- Cancelling Rules -->
+                                                                <div class="form-section modern">
+                                                                    <h4>قواعد الإلغاء</h4>
+                                                                    <div id="rules-container" class="services-container">
+                                                                        <div class="service-item">
+                                                                            <input type="text" name="cancelling_rules[]" placeholder="أدخل قاعدة إلغاء" class="service-input">
+                                                                            <button type="button" class="remove-service-btn" onclick="removeServiceInput(this)">×</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button type="button" class="add-service-btn" onclick="addServiceInput('rules-container', 'cancelling_rules[]', 'أدخل قاعدة إلغاء')">+ إضافة قاعدة</button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal-footer">
+                                                                <button type="submit" class="btn-primary" id="submit-card-btn">إرسال الرحلة للمراجعة</button>
+                                                                <button type="button" class="btn-secondary" onclick="hideAddTripForm()">إلغاء</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                        
+                        <!-- Partner's Cards List -->
+                        <div class="trips-grid" id="tripsGrid">
+                            <% if (partnerCards && partnerCards.length > 0) { %>
+                                <% partnerCards.forEach(card => { %>
+                                    <div class="trip-card">
+                                        <div class="trip-header">
+                                            <h4><%= card.code %></h4>
+                                            <span class="status-badge <%= card.isApproved ? 'approved' : 'pending' %>">
+                                                <%= card.isApproved ? 'معتمد' : 'في انتظار المراجعة' %>
+                                            </span>
+                                        </div>
+                                        <div class="trip-info">
+                                            <p><strong>النوع:</strong> 
+                                                <%= card.type === 'omrah' ? 'عمرة' : 
+                                                    card.type === 'internal_tour' ? 'رحلة داخلية' : 
+                                                    card.type === 'external_tour' ? 'رحلة خارجية' : 
+                                                    card.type === '7ag' ? 'حج' : 'رمضان' %>
+                                            </p>
+                                            <p><strong>المدة:</strong> <%= card.days %> أيام / <%= card.nights %> ليالي</p>
+                                            <p><strong>تاريخ السفر:</strong> <%= new Date(card.travel_date).toLocaleDateString('ar-SA') %></p>
+                                            <p><strong>انتهاء العرض:</strong> <%= card.offer_expiry_date ? new Date(card.offer_expiry_date).toLocaleDateString('ar-SA') : 'غير محدد' %></p>
+                                            <p><strong>أقل سعر:</strong> <%= card.lowest_price %> ج.م</p>
+                                        </div>
+                                        <div class="trip-actions">
+                                            <% if (card.isApproved) { %>
+                                                <a href="/card/<%= card._id %>" class="btn-view" target="_blank">عرض</a>
+                                            <% } %>
+                                            <button class="btn-delete" onclick="deletePartnerCard('<%= card._id %>', '<%= card.code %>')">حذف</button>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <div class="empty-icon">🗺️</div>
+                                    <h3>لا توجد رحلات بعد</h3>
+                                    <p>ابدأ بإضافة رحلتك الأولى</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Bookings Section -->
+                    <div id="bookings-section" class="section">
+                        <div class="section-header">
+                            <h2>الحجوزات</h2>
+                        </div>
+                        
+                        <div class="bookings-list" id="bookingsList">
+                            <% if (partnerReservations && partnerReservations.length > 0) { %>
+                                <% partnerReservations.forEach(reservation => { %>
+                                    <div class="booking-card" data-reservation-id="<%= reservation._id %>">
+                                        <div class="booking-header">
+                                            <div class="booking-info">
+                                                <h4><%= reservation.card.title %></h4>
+                                                <p class="reservation-number">رقم الحجز: <%= reservation.reservationNumber %></p>
+                                                <p class="booking-date">تاريخ الحجز: <%= new Date(reservation.currentDate).toLocaleDateString('ar-EG') %></p>
+                                            </div>
+                                            <div class="booking-status">
+                                                <span class="status-badge status-<%= reservation.partnerStatus %>">
+                                                    <% if (reservation.partnerStatus === 'pending') { %>
+                                                        في انتظار المراجعة
+                                                    <% } else if (reservation.partnerStatus === 'confirmed') { %>
+                                                        مؤكد
+                                                    <% } else if (reservation.partnerStatus === 'rejected') { %>
+                                                        مرفوض
+                                                    <% } %>
+                                                </span>
+                                                <span class="payment-badge payment-<%= reservation.paymentStatus %>">
+                                                    <% if (reservation.paymentStatus === 'pending') { %>
+                                                        لم يتم الدفع
+                                                    <% } else if (reservation.paymentStatus === 'paid') { %>
+                                                        تم الدفع
+                                                    <% } else if (reservation.paymentStatus === 'cancelled') { %>
+                                                        ملغى
+                                                    <% } %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="booking-details">
+                                            <div class="customer-info">
+                                                <h5>معلومات العميل:</h5>
+                                                <p><strong>الاسم:</strong> <%= reservation.user.username %></p>
+                                                <p><strong>البريد الإلكتروني:</strong> <%= reservation.user.email %></p>
+                                                <% if (reservation.user.phone) { %>
+                                                    <p><strong>الهاتف:</strong> <%= reservation.user.phone %></p>
+                                                <% } %>
+                                            </div>
+                                            
+                                            <div class="trip-details">
+                                                <p><strong>عدد الأشخاص:</strong> <%= reservation.people_count %></p>
+                                                <p><strong>المبلغ الإجمالي:</strong> <%= reservation.totalAmount %> ر.س</p>
+                                                <p><strong>طريقة الدفع:</strong> 
+                                                    <% if (reservation.paymentMethod === 'vodafone_cash') { %>
+                                                        فودافون كاش
+                                                    <% } else if (reservation.paymentMethod === 'bank_transfer') { %>
+                                                        تحويل بنكي
+                                                    <% } else if (reservation.paymentMethod === 'cash') { %>
+                                                        نقداً
+                                                    <% } %>
+                                                </p>
+                                                <% if (reservation.note) { %>
+                                                    <p><strong>ملاحظات العميل:</strong> <%= reservation.note %></p>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        
+                                        <% if (reservation.partnerStatus === 'pending') { %>
+                                            <div class="booking-actions">
+                                                <div class="partner-notes">
+                                                    <label for="notes-<%= reservation._id %>">ملاحظات (اختياري):</label>
+                                                    <textarea id="notes-<%= reservation._id %>" placeholder="أضف ملاحظات للعميل..."></textarea>
+                                                </div>
+                                                <div class="action-buttons">
+                                                    <button class="btn-confirm" onclick="confirmReservation('<%= reservation._id %>')">
+                                                        ✓ تأكيد الحجز
+                                                    </button>
+                                                    <button class="btn-reject" onclick="rejectReservation('<%= reservation._id %>')">
+                                                        ✗ رفض الحجز
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        <% } else { %>
+                                            <% if (reservation.partnerNotes) { %>
+                                                <div class="partner-notes-display">
+                                                    <strong>ملاحظات الشريك:</strong> <%= reservation.partnerNotes %>
+                                                </div>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <div class="empty-icon">📋</div>
+                                    <h3>لا توجد حجوزات بعد</h3>
+                                    <p>عندما يقوم العملاء بحجز رحلاتك ستظهر هنا</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Chat Section -->
+                    <div id="chat-section" class="section">
+                        <section class="chat-inbox-card" data-chat-inbox data-scope="owner">
+                            <div class="chat-inbox-header">
+                                <div>
+                                    <h2>محادثات العملاء</h2>
+                                    <p>تابع استفسارات المهتمين بعروضك وتواصل معهم فوراً.</p>
+                                </div>
+                                <div class="chat-inbox-actions">
+                                    <button type="button" data-action="refreshThreads">تحديث</button>
+                                </div>
+                            </div>
+                            <div class="chat-inbox-body">
+                                <aside class="chat-thread-panel">
+                                    <div class="chat-search">
+                                        <input type="search" placeholder="ابحث باسم العميل أو كود العرض" data-thread-search>
+                                    </div>
+                                    <div class="chat-thread-scroll">
+                                        <ul class="chat-thread-list" data-thread-list></ul>
+                                        <div class="chat-thread-empty" data-thread-empty>لا توجد محادثات بعد</div>
+                                    </div>
+                                </aside>
+                                <div class="chat-conversation-panel">
+                                    <div class="chat-conversation-placeholder" data-conversation-placeholder>
+                                        <h3>اختر محادثة لعرض التفاصيل</h3>
+                                        <p>عندما يراسلك العملاء حول بطاقة معينة ستظهر هنا.</p>
+                                    </div>
+                                    <div class="chat-conversation" data-conversation hidden>
+                                        <div class="chat-conversation-header">
+                                            <div>
+                                                <p class="chat-card-label" data-active-card-code>—</p>
+                                                <p class="chat-card-meta" data-active-card-route></p>
+                                                <p class="chat-viewer-meta" data-active-viewer></p>
+                                            </div>
+                                            <div class="chat-header-actions">
+                                                <a href="#" class="chat-open-card" data-open-card target="_blank" rel="noopener" hidden>عرض البطاقة</a>
+                                            </div>
+                                        </div>
+                                        <div class="chat-messages" data-messages></div>
+                                        <form class="chat-composer" data-message-form>
+                                            <textarea data-message-input rows="2" placeholder="اكتب ردك هنا..." maxlength="2000"></textarea>
+                                            <div class="chat-composer-footer">
+                                                <small>اضغط Enter للإرسال وShift+Enter لسطر جديد</small>
+                                                <button type="submit" data-send-button>إرسال</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-inbox-toast" data-chat-toast hidden></div>
+                            <div class="chat-inbox-loader" data-inbox-loader hidden>جاري التحميل...</div>
+                        </section>
+                    </div>
+
+                    <!-- Reports Section -->
+                    <div id="reports-section" class="section">
+                        <div class="section-header">
+                            <h2>التقارير</h2>
+                            <button class="btn-secondary" onclick="loadReportsData()">تحديث التقارير</button>
+                        </div>
+                        
+                        <div class="reports-grid">
+                            <!-- Revenue Overview -->
+                            <div class="report-card">
+                                <h3>📊 الإيرادات الشهرية</h3>
+                                <div class="revenue-overview" id="revenueOverview">
+                                    <div class="revenue-total">
+                                        <span class="revenue-amount" id="totalRevenueAmount">0 ج.م</span>
+                                        <span class="revenue-label">إجمالي الإيرادات</span>
+                                    </div>
+                                    <div class="revenue-chart-simple" id="revenueChartSimple">
+                                        <div class="loading">جاري التحميل...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Performance Metrics -->
+                            <div class="report-card">
+                                <h3>🎯 أداء الرحلات</h3>
+                                <div class="performance-metrics" id="performanceMetrics">
+                                    <div class="metric">
+                                        <span class="metric-icon">🏆</span>
+                                        <div class="metric-info">
+                                            <span class="metric-label">أكثر الرحلات طلباً</span>
+                                            <span class="metric-value" id="topTrip">جاري التحميل...</span>
+                                        </div>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-icon">📈</span>
+                                        <div class="metric-info">
+                                            <span class="metric-label">معدل التحويل</span>
+                                            <span class="metric-value" id="conversionRate">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-icon">💰</span>
+                                        <div class="metric-info">
+                                            <span class="metric-label">متوسط قيمة الحجز</span>
+                                            <span class="metric-value" id="avgBookingValue">0 ج.م</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Booking Status -->
+                            <div class="report-card">
+                                <h3>📋 حالة الحجوزات</h3>
+                                <div class="status-overview" id="bookingStatusOverview">
+                                    <div class="status-item status-pending">
+                                        <div class="status-icon">⏳</div>
+                                        <div class="status-info">
+                                            <span class="status-count" id="pendingCount">0</span>
+                                            <span class="status-label">في الانتظار</span>
+                                        </div>
+                                        <div class="status-bar">
+                                            <div class="status-progress" id="pendingProgress"></div>
+                                        </div>
+                                    </div>
+                                    <div class="status-item status-confirmed">
+                                        <div class="status-icon">✅</div>
+                                        <div class="status-info">
+                                            <span class="status-count" id="confirmedCount">0</span>
+                                            <span class="status-label">مؤكد</span>
+                                        </div>
+                                        <div class="status-bar">
+                                            <div class="status-progress" id="confirmedProgress"></div>
+                                        </div>
+                                    </div>
+                                    <div class="status-item status-rejected">
+                                        <div class="status-icon">❌</div>
+                                        <div class="status-info">
+                                            <span class="status-count" id="rejectedCount">0</span>
+                                            <span class="status-label">مرفوض</span>
+                                        </div>
+                                        <div class="status-bar">
+                                            <div class="status-progress" id="rejectedProgress"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Status -->
+                            <div class="report-card">
+                                <h3>💳 حالة المدفوعات</h3>
+                                <div class="payment-overview" id="paymentStatusOverview">
+                                    <div class="payment-item payment-paid">
+                                        <div class="payment-icon">💚</div>
+                                        <div class="payment-info">
+                                            <span class="payment-count" id="paidCount">0</span>
+                                            <span class="payment-label">مدفوع</span>
+                                        </div>
+                                        <div class="payment-bar">
+                                            <div class="payment-progress" id="paidProgress"></div>
+                                        </div>
+                                    </div>
+                                    <div class="payment-item payment-pending">
+                                        <div class="payment-icon">🟡</div>
+                                        <div class="payment-info">
+                                            <span class="payment-count" id="paymentPendingCount">0</span>
+                                            <span class="payment-label">في انتظار الدفع</span>
+                                        </div>
+                                        <div class="payment-bar">
+                                            <div class="payment-progress" id="paymentPendingProgress"></div>
+                                        </div>
+                                    </div>
+                                    <div class="payment-item payment-cancelled">
+                                        <div class="payment-icon">🔴</div>
+                                        <div class="payment-info">
+                                            <span class="payment-count" id="cancelledCount">0</span>
+                                            <span class="payment-label">ملغي</span>
+                                        </div>
+                                        <div class="payment-bar">
+                                            <div class="payment-progress" id="cancelledProgress"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Trip Types Stats -->
+                            <div class="report-card full-width">
+                                <h3>🗺️ أداء أنواع الرحلات</h3>
+                                <div class="trip-types-stats" id="tripTypesStats">
+                                    <div class="loading">جاري تحميل البيانات...</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Activity -->
+                            <div class="report-card full-width">
+                                <h3>🕒 النشاط الأخير</h3>
+                                <div class="recent-activity" id="recentActivity">
+                                    <div class="loading">جاري تحميل النشاط الأخير...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div id="settings-section" class="section">
+                        <div class="section-header">
+                            <h2>إعدادات الحساب</h2>
+                        </div>
+                        
+                        <div class="settings-grid">
+                            <div class="settings-card">
+                                <h3>معلومات الشركة</h3>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <span class="label">اسم الشركة:</span>
+                                        <span class="value"><%= user.companyName %></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">ممثل الشركة:</span>
+                                        <span class="value"><%= user.companyRepresentative %></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">رقم الهاتف:</span>
+                                        <span class="value"><%= user.phoneNumber %></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">حالة التحقق:</span>
+                                        <span class="value <%= user.isVerified ? 'verified' : 'unverified' %>">
+                                            <%= user.isVerified ? 'محقق ✅' : 'غير محقق ⏳' %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <button class="btn-secondary" onclick="editCompanyInfo()">تعديل المعلومات</button>
+                            </div>
+
+                            <div class="settings-card">
+                                <h3>الباقة الحالية</h3>
+                                <div class="package-details">
+                                    <div class="package-name-large">
+                                        <% if (user.partnerPackage === 'basic') { %>
+                                            باقة أساسية
+                                        <% } else if (user.partnerPackage === 'professional') { %>
+                                            باقة احترافية
+                                        <% } else if (user.partnerPackage === 'premium') { %>
+                                            باقة مميزة
+                                        <% } %>
+                                    </div>
+                                    <div class="package-features">
+                                        <% if (user.partnerPackage === 'basic') { %>
+                                            <p>✅ عرض <%= tierLimits.basic %> رحلات</p>
+                                            <p>✅ صفحة تعريف بالشركة</p>
+                                            <p>✅ دعم فني</p>
+                                        <% } else if (user.partnerPackage === 'professional') { %>
+                                            <p>✅ عرض <%= tierLimits.professional %> رحلة</p>
+                                            <p>✅ تقارير أداء تفصيلية</p>
+                                            <p>✅ شعار مميز</p>
+                                            <p>✅ دعم مباشر</p>
+                                        <% } else if (user.partnerPackage === 'premium') { %>
+                                            <p>✅ <%= tierLimits.premium === -1 ? 'عدد غير محدود من الرحلات' : 'عرض ' + tierLimits.premium + ' رحلة' %></p>
+                                            <p>✅ ظهور في الصفحة الرئيسية</p>
+                                            <p>✅ حملات ترويجية مشتركة</p>
+                                            <p>✅ دعم مخصص 24/7</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <button class="btn-primary" onclick="upgradePackage()">ترقية الباقة</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('bottom_app_navbar') %>
+
+    <style>
+        /* Override container width for partner dashboard page */
+        .container {
+            max-width: 100% !important;
+            padding: 0 !important;
+        }
+        
+        .partner-dashboard {
+            padding: 40px 0 120px 0;
+            background: #f8fafc;
+            min-height: calc(100vh - 120px);
+            width: 100%;
+        }
+
+        .partner-dashboard .container {
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        .dashboard-header h1 {
+            color: #1E5470;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .company-rep {
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+
+        .verification-alert {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 0 20px 40px 20px;
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .alert-icon {
+            font-size: 3rem;
+        }
+
+        .alert-text h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .alert-text p {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .contact-number {
+            background: #f59e0b;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            display: inline-block;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .small-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-info h3 {
+            color: #1E5470;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .stat-info p {
+            color: #34729C;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        .dashboard-sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #64748b;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-color: #0369a1;
+        }
+
+        .menu-icon {
+            font-size: 1.5rem;
+        }
+
+        .dashboard-main {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            color: #1E5470;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .btn-primary, .btn-secondary, .btn-disabled {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 114, 156, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1E5470;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Booking Cards Styles */
+        .booking-card {
+            background: #fff;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+            border-bottom: 1px solid #f1f5f9;
+            background: #f8fafc;
+        }
+
+        .booking-info h4 {
+            color: #1E5470;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .booking-info p {
+            margin: 4px 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .reservation-number {
+            font-weight: 600;
+            color: #1E5470 !important;
+        }
+
+        .booking-status {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .status-badge, .payment-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .payment-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .payment-paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .payment-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .booking-details {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .customer-info, .trip-details {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .customer-info h5 {
+            color: #1E5470;
+            margin-bottom: 10px;
+        }
+
+        .customer-info p, .trip-details p {
+            margin: 6px 0;
+            font-size: 0.9rem;
+        }
+
+        .booking-actions {
+            padding: 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .partner-notes {
+            margin-bottom: 15px;
+        }
+
+        .partner-notes label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1E5470;
+            font-weight: 600;
+        }
+
+        .partner-notes textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-confirm, .btn-reject {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-confirm {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .partner-notes-display {
+            padding: 15px 20px;
+            background: #f0f9ff;
+            border-top: 1px solid #e2e8f0;
+            color: #1e40af;
+            font-size: 0.9rem;
+        }
+
+        /* Reports Section Styles */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .report-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .report-card h3 {
+            color: #1E5470;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Revenue Overview Styles */
+        .revenue-overview {
+            text-align: center;
+        }
+
+        .revenue-total {
+            margin-bottom: 20px;
+        }
+
+        .revenue-amount {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1E5470;
+            margin-bottom: 5px;
+        }
+
+        .revenue-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .revenue-chart-simple {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .revenue-month {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .revenue-month-name {
+            font-weight: 600;
+            color: #1E5470;
+        }
+
+        .revenue-month-amount {
+            font-weight: 700;
+            color: #34729C;
+        }
+
+        /* Performance Metrics Styles */
+        .performance-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            border-color: #1E5470;
+            box-shadow: 0 4px 12px rgba(30, 84, 112, 0.1);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .metric-info {
+            flex: 1;
+        }
+
+        .metric-label {
+            display: block;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            display: block;
+            color: #1E5470;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Status Overview Styles */
+        .status-overview, .payment-overview {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status-item, .payment-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover, .payment-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .status-icon, .payment-icon {
+            font-size: 2rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .status-info, .payment-info {
+            flex: 1;
+        }
+
+        .status-count, .payment-count {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1E5470;
+            margin-bottom: 5px;
+        }
+
+        .status-label, .payment-label {
+            display: block;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .status-bar, .payment-bar {
+            width: 100px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .status-progress, .payment-progress {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        /* Status Colors */
+        .status-pending .status-progress {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .status-confirmed .status-progress {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .status-rejected .status-progress {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .payment-paid .payment-progress {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .payment-pending .payment-progress {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .payment-cancelled .payment-progress {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* Trip Types Stats */
+        .trip-types-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .trip-type-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .trip-type-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .trip-type-card h4 {
+            color: #1E5470;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .trip-type-stats-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .trip-type-stats-item span:first-child {
+            color: #64748b;
+        }
+
+        .trip-type-stats-item span:last-child {
+            font-weight: 600;
+            color: #1E5470;
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .activity-info h5 {
+            color: #1E5470;
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .activity-info p {
+            color: #64748b;
+            margin: 0;
+            font-size: 0.85rem;
+        }
+
+        .activity-status {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .activity-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .activity-status.confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .activity-status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            text-align: center;
+            color: #64748b;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        /* Mobile responsiveness for reports */
+        @media (max-width: 768px) {
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .trip-types-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .metric {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .status-item, .payment-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .status-bar, .payment-bar {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* ...existing styles... */
+        /* Modern modal form styles - Enhanced */
+        .add-trip-modal { 
+            display: none; 
+            z-index: 1000;
+        }
+        .add-trip-modal.active { 
+            display: block; 
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.6);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-card {
+            position: fixed;
+            inset: 20px auto auto 50%;
+            transform: translateX(-50%);
+            width: min(1200px, 95vw);
+            max-height: 90vh;
+            overflow: auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0,0,0,.3);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 28px;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #1E5470;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: #f1f5f9;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #64748b;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: #ef4444;
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 28px;
+            background: #fff;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            padding: 24px 28px;
+            border-top: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .form-section.modern {
+            margin-bottom: 32px;
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .form-section.modern:hover {
+            border-color: #1E5470;
+            box-shadow: 0 4px 20px rgba(30, 84, 112, 0.1);
+        }
+        
+        .form-section.modern h4 {
+            margin: 0 0 20px 0;
+            color: #1E5470;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-section.modern h4:before {
+            content: "●";
+            color: #34729C;
+            font-size: 1.5rem;
+        }
+        
+        .form-grid.three {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .form-grid.two {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1E5470;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .form-group.with-icon .input-wrap {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group.with-icon .input-wrap:focus-within {
+            border-color: #1E5470;
+            box-shadow: 0 0 0 3px rgba(30, 84, 112, 0.1);
+        }
+        
+        .form-group.with-icon .input-icon {
+            position: absolute;
+            inset-inline-start: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.6;
+            font-size: 1.1rem;
+        }
+        
+        [dir="rtl"] .form-group.with-icon .input-icon {
+            inset-inline-start: auto;
+            inset-inline-end: 16px;
+        }
+        
+        .form-group.with-icon input,
+        .form-group.with-icon select {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            color: #1E5470;
+            outline: none;
+        }
+        
+        [dir="rtl"] .form-group.with-icon input,
+        [dir="rtl"] .form-group.with-icon select {
+            padding: 16px 50px 16px 16px;
+        }
+        
+        .form-group.with-icon input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        /* Enhanced Dropzone Styles */
+        .dropzone {
+            border: 3px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .dropzone:hover {
+            border-color: #1E5470;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            transform: translateY(-2px);
+        }
+        
+        .dz-placeholder {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .dz-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+        
+        .dz-preview {
+            display: none;
+            max-width: 100%;
+            border-radius: 12px;
+        }
+        
+        .dz-multi-preview {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        
+        .dz-multi-preview img {
+            width: 140px;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .dz-multi-preview img:hover {
+            border-color: #1E5470;
+            transform: scale(1.05);
+        }
+        
+        /* Enhanced Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover:before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(30, 84, 112, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1E5470;
+            border: 2px solid #e2e8f0;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #1E5470;
+            transform: translateY(-2px);
+        }
+        .cards-list{display:flex;flex-direction:column;gap:12px}
+        .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px}
+        .section-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+        .add-btn.ghost{background:#eef2f7;color:#1E5470;border:1px dashed #cbd5e1}
+        .remove-btn.ghost{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;margin-top:10px}
+        /* Modern Service Input Styles */
+        .services-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .service-item:hover {
+            border-color: #1E5470;
+            box-shadow: 0 2px 8px rgba(30, 84, 112, 0.1);
+        }
+        
+        .service-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            color: #1E5470;
+            outline: none;
+        }
+        
+        .service-input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .remove-service-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .remove-service-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        
+        .add-service-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+        
+        .add-service-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Remove old chips styles */
+        .chips-input {
+            display: none;
+        }
+        
+        .chips {
+            display: none;
+        }
+        
+        .chip {
+            display: none;
+        }
+        /* Mobile responsive improvements */
+        @media (max-width: 900px) {
+            .form-grid.three {
+                grid-template-columns: 1fr;
+            }
+            .form-grid.two {
+                grid-template-columns: 1fr;
+            }
+            .modal-card {
+                inset: 10px;
+                transform: none;
+                left: 10px;
+                right: 10px;
+                width: auto;
+            }
+            .modal-header {
+                padding: 20px;
+            }
+            .modal-body {
+                padding: 20px;
+            }
+            .modal-footer {
+                padding: 20px;
+                flex-direction: column;
+            }
+            .form-section.modern {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            .form-grid.three,
+            .form-grid.two {
+                gap: 16px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .dashboard-sidebar {
+                order: 2;
+            }
+            .dashboard-main {
+                order: 1;
+            }
+            .sidebar-menu {
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 5px;
+            }
+            .menu-item {
+                white-space: nowrap;
+                padding: 12px 16px;
+            }
+            .services-container {
+                gap: 10px;
+            }
+            .service-item {
+                padding: 10px;
+            }
+        }
+        
+        /* Loading states */
+        .loading-state {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1E5470;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Success animations */
+        .success-message {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid #10b981;
+            margin: 10px 0;
+            animation: slideInFromTop 0.5s ease;
+        }
+        
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Form validation styles */
+        .form-group.with-icon .input-wrap.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .form-group.with-icon .input-wrap.success {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+        
+        .form-group.error .error-message {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+
+    <script>
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.add('active');
+            
+            // Add active class to clicked menu item
+            event.target.closest('.menu-item').classList.add('active');
+            
+            // Load reports data when reports section is shown
+            if (sectionName === 'reports') {
+                loadReportsData();
+            }
+        }
+
+        function showAddTripForm() {
+            const modal = document.getElementById('add-trip-form');
+            modal.classList.add('active');
+        }
+        
+        function hideAddTripForm() {
+            const modal = document.getElementById('add-trip-form');
+            modal.classList.remove('active');
+        }
+
+        function editCompanyInfo() {
+            alert('ميزة تعديل معلومات الشركة ستكون متاحة قريباً');
+        }
+
+        function upgradePackage() {
+            window.location.href = '/partner#packages';
+        }
+        
+        // Dynamic offer type options
+        const typeSelect = document.querySelector('select[name="type"]');
+        const offerTypeSelect = document.querySelector('#partner_offer_type');
+        
+        const offerTypeOptions = {
+            'omrah': [
+                { value: 'اقتصادي', text: 'اقتصادي' },
+                { value: 'مميز', text: 'مميز' },
+                { value: 'فاخر', text: 'فاخر' }
+            ],
+            '7ag': [
+                { value: 'اقتصادي', text: 'اقتصادي' },
+                { value: 'مميز', text: 'مميز' },
+                { value: 'فاخر', text: 'فاخر' }
+            ],
+            'ramadan': [
+                { value: 'اقتصادي', text: 'اقتصادي' },
+                { value: 'مميز', text: 'مميز' },
+                { value: 'فاخر', text: 'فاخر' }
+            ],
+            'external_tour': [
+                { value: 'رحلات بتاشيره', text: 'رحلات بتاشيره' },
+                { value: 'رحلات بدون تاشيره', text: 'رحلات بدون تاشيره' },
+                { value: 'رحلات شهر العسل', text: 'رحلات شهر العسل' }
+            ],
+            'internal_tour': [
+                { value: 'رحله يوم الواحد', text: 'رحله يوم الواحد' },
+                { value: 'رحلات شهر العسل', text: 'رحلات شهر العسل' },
+                { value: 'رحلات سياحيه', text: 'رحلات سياحيه' }
+            ]
+        };
+        
+        function updateOfferTypeOptions() {
+            if (!typeSelect || !offerTypeSelect) return;
+            
+            const selectedType = typeSelect.value;
+            const options = offerTypeOptions[selectedType] || [];
+            
+            offerTypeSelect.innerHTML = '<option value="">اختر نوع العرض</option>';
+            
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                offerTypeSelect.appendChild(optionElement);
+            });
+        }
+        
+        // New modern service input management
+        function addServiceInput(containerId, inputName, placeholder) {
+            const container = document.getElementById(containerId);
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item';
+            serviceItem.innerHTML = `
+                <input type="text" name="${inputName}" placeholder="${placeholder}" class="service-input">
+                <button type="button" class="remove-service-btn" onclick="removeServiceInput(this)">×</button>
+            `;
+            container.appendChild(serviceItem);
+        }
+        
+        function removeServiceInput(btn) {
+            const container = btn.parentElement.parentElement;
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            }
+        }
+        
+        // Hotel management
+        function addHotel() {
+            const container = document.getElementById('partner-hotels-container');
+            const hotelItem = document.createElement('div');
+            hotelItem.className = 'hotel-item card';
+            hotelItem.innerHTML = `
+                <div class="hotel-grid">
+                    <div class="form-group">
+                        <label>عدد الليالي:</label>
+                        <input type="number" class="hotel-nights" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم الفندق:</label>
+                        <input type="text" class="hotel-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>نوع الفندق:</label>
+                        <select class="hotel-type" required>
+                            <option value="">اختر النوع</option>
+                            <option value="اقتصادي">اقتصادي</option>
+                            <option value="سياحي">سياحي</option>
+                            <option value="VIP">VIP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الموقع:</label>
+                        <input type="text" class="hotel-location" required>
+                    </div>
+                    <div class="form-group">
+                        <label>يشمل الطعام:</label>
+                        <select class="hotel-food" required>
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="remove-btn ghost" onclick="removeHotel(this)">حذف الفندق</button>
+            `;
+            container.appendChild(hotelItem);
+        }
+        
+        function removeHotel(btn) {
+            btn.parentElement.remove();
+        }
+        
+        // Housing management
+        function addHousing() {
+            const container = document.getElementById('partner-housing-container');
+            const housingItem = document.createElement('div');
+            housingItem.className = 'housing-item card';
+            housingItem.innerHTML = `
+                <div class="housing-grid">
+                    <div class="form-group">
+                        <label>نوع الغرفة:</label>
+                        <input type="text" class="room-type" required>
+                    </div>
+                    <div class="form-group">
+                        <label>السعر (ج.م):</label>
+                        <input type="number" class="room-price" min="0" required>
+                    </div>
+                </div>
+                <button type="button" class="remove-btn ghost" onclick="removeHousing(this)">حذف</button>
+            `;
+            container.appendChild(housingItem);
+        }
+        
+        function removeHousing(btn) {
+            btn.parentElement.remove();
+        }
+        
+        // Service management
+        function addService(type) {
+            const containerId = type === 'included' ? 'partner-included-services' : 'partner-not-included-services';
+            const container = document.getElementById(containerId);
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item';
+            serviceItem.innerHTML = `
+                <input type="text" placeholder="أدخل الخدمة">
+                <button type="button" class="remove-btn" onclick="removeService(this)">حذف</button>
+            `;
+            container.appendChild(serviceItem);
+        }
+        
+        function removeService(btn) {
+            btn.parentElement.remove();
+        }
+        
+        // Note management
+        function addNote() {
+            const container = document.getElementById('partner-notes');
+            const noteItem = document.createElement('div');
+            noteItem.className = 'note-item';
+            noteItem.innerHTML = `
+                <textarea placeholder="أدخل ملاحظة مهمة"></textarea>
+                <button type="button" class="remove-btn" onclick="removeNote(this)">حذف</button>
+            `;
+            container.appendChild(noteItem);
+        }
+        
+        function removeNote(btn) {
+            btn.parentElement.remove();
+        }
+        
+        // Rule management
+        function addRule() {
+            const container = document.getElementById('partner-cancelling-rules');
+            const ruleItem = document.createElement('div');
+            ruleItem.className = 'rule-item';
+            ruleItem.innerHTML = `
+                <textarea placeholder="أدخل قاعدة إلغاء"></textarea>
+                <button type="button" class="remove-btn" onclick="removeRule(this)">حذف</button>
+            `;
+            container.appendChild(ruleItem);
+        }
+        
+        function removeRule(btn) {
+            btn.parentElement.remove();
+        }
+        
+        // Dropzones
+        (function initDropzones(){
+            const thumbInput = document.getElementById('thumbnailInput');
+            const thumbPreview = document.getElementById('thumbnailPreview');
+            const thumbZone = document.getElementById('thumbnailDropzone');
+            if (thumbInput && thumbZone) {
+                thumbInput.addEventListener('change', ()=>{
+                    if (thumbInput.files && thumbInput.files[0]){
+                        const url = URL.createObjectURL(thumbInput.files[0]);
+                        thumbPreview.src = url; thumbPreview.style.display='block';
+                    }
+                });
+            }
+            const imagesInput = document.getElementById('imagesInput');
+            const imagesPreview = document.getElementById('imagesPreview');
+            if (imagesInput && imagesPreview) {
+                imagesInput.addEventListener('change', ()=>{
+                    imagesPreview.innerHTML = '';
+                    Array.from(imagesInput.files).forEach(file=>{
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        imagesPreview.appendChild(img);
+                    });
+                });
+            }
+        })();
+
+        // Form submission
+        document.getElementById('partnerCardForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-card-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الإرسال...';
+            
+            try {
+                // Validate required fields first
+                const requiredFields = [
+                    { name: 'type', label: 'نوع الرحلة' },
+                    { name: 'code', label: 'كود الرحلة' },
+                    { name: 'title', label: 'عنوان الرحلة' },
+                    { name: 'days', label: 'عدد الأيام' },
+                    { name: 'nights', label: 'عدد الليالي' },
+                    { name: 'travel_date', label: 'تاريخ السفر' },
+                    { name: 'offer_expiry_date', label: 'تاريخ انتهاء العرض' },
+                    { name: 'going_route', label: 'مسار الذهاب' },
+                    { name: 'returning_route', label: 'مسار العودة' },
+                    { name: 'plane_company', label: 'شركة الطيران' }
+                ];
+                
+                let hasErrors = false;
+                requiredFields.forEach(field => {
+                    const input = document.querySelector(`[name="${field.name}"]`);
+                    if (input && !input.value.trim()) {
+                        const formGroup = input.closest('.form-group');
+                        const inputWrap = input.closest('.input-wrap');
+                        if (formGroup) formGroup.classList.add('error');
+                        if (inputWrap) inputWrap.classList.add('error');
+                        hasErrors = true;
+                    }
+                });
+
+                // Date validation - ensure expiry is before travel date
+                const travelDateInput = document.querySelector('[name="travel_date"]');
+                const offerExpiryInput = document.querySelector('[name="offer_expiry_date"]');
+                
+                if (travelDateInput && offerExpiryInput && travelDateInput.value && offerExpiryInput.value) {
+                    const travelDate = new Date(travelDateInput.value);
+                    const expiryDate = new Date(offerExpiryInput.value);
+                    
+                    if (expiryDate >= travelDate) {
+                        const formGroup = offerExpiryInput.closest('.form-group');
+                        const inputWrap = offerExpiryInput.closest('.input-wrap');
+                        if (formGroup) formGroup.classList.add('error');
+                        if (inputWrap) inputWrap.classList.add('error');
+                        hasErrors = true;
+                        throw new Error('تاريخ انتهاء العرض يجب أن يكون قبل تاريخ السفر');
+                    }
+                }
+
+                if (hasErrors) {
+                    throw new Error('يرجى ملء جميع الحقول المطلوبة');
+                }                // Collect form data
+                const formData = new FormData(this);
+                // chips are initialized on DOMContentLoaded; gather from DOM
+                
+                // Collect hotels data
+                const hotels = [];
+                document.querySelectorAll('#partner-hotels-container .hotel-item').forEach(item => {
+                    const hotel = {
+                        nights: parseInt(item.querySelector('.hotel-nights').value),
+                        hotel: item.querySelector('.hotel-name').value,
+                        hotel_type: item.querySelector('.hotel-type').value,
+                        location: item.querySelector('.hotel-location').value,
+                        comes_with_food: item.querySelector('.hotel-food').value === 'true'
+                    };
+                    hotels.push(hotel);
+                });
+                
+                // Collect housing options
+                const housingOptions = [];
+                document.querySelectorAll('#partner-housing-container .housing-item').forEach(item => {
+                    const housing = {
+                        roomType: item.querySelector('.room-type').value,
+                        price: parseInt(item.querySelector('.room-price').value)
+                    };
+                    housingOptions.push(housing);
+                });
+                
+                // Validate minimum hotels and housing options
+                if (hotels.length === 0) {
+                    throw new Error('يجب إضافة فندق واحد على الأقل');
+                }
+                
+                if (housingOptions.length === 0) {
+                    throw new Error('يجب إضافة خيار إقامة واحد على الأقل');
+                }
+                
+                // Create plane object structure that backend expects
+                // We need to construct the plane object and send it as individual fields
+                // The backend expects plane.hotel and plane.housingOptions structure
+                formData.append('hotels', JSON.stringify(hotels));
+                formData.append('housingOptions', JSON.stringify(housingOptions));
+                
+                // Also send the plane object structure for validation
+                const planeData = {
+                    hotel: hotels,
+                    housingOptions: housingOptions
+                };
+                
+                // Send each plane property individually for form parsing
+                hotels.forEach((hotel, index) => {
+                    formData.append(`plane[hotel][${index}][nights]`, hotel.nights);
+                    formData.append(`plane[hotel][${index}][hotel]`, hotel.hotel);
+                    formData.append(`plane[hotel][${index}][hotel_type]`, hotel.hotel_type);
+                    formData.append(`plane[hotel][${index}][location]`, hotel.location);
+                    formData.append(`plane[hotel][${index}][comes_with_food]`, hotel.comes_with_food);
+                });
+                
+                housingOptions.forEach((option, index) => {
+                    formData.append(`plane[housingOptions][${index}][roomType]`, option.roomType);
+                    formData.append(`plane[housingOptions][${index}][price]`, option.price);
+                });
+                
+                // Calculate and add lowest price (minimum from housing options)
+                if (housingOptions.length > 0) {
+                    const lowest_price = Math.min(...housingOptions.map(option => option.price));
+                    formData.append('lowest_price', lowest_price);
+                }
+                
+                // Collect services, notes, and rules from simple inputs
+                const includedServices = Array.from(document.querySelectorAll('input[name="included_services[]"]'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+                
+                const notIncludedServices = Array.from(document.querySelectorAll('input[name="not_included_services[]"]'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+                
+                const notes = Array.from(document.querySelectorAll('input[name="notes[]"]'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+                
+                const cancellingRules = Array.from(document.querySelectorAll('input[name="cancelling_rules[]"]'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+                
+                formData.append('included_services', JSON.stringify(includedServices));
+                formData.append('not_included_services', JSON.stringify(notIncludedServices));
+                formData.append('notes', JSON.stringify(notes));
+                formData.append('cancelling_rules', JSON.stringify(cancellingRules));
+                
+                const response = await fetch('/partner/add-card', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    hideAddTripForm();
+                    this.reset();
+                    refreshStats();
+                    location.reload(); // Refresh to show the new card
+                } else {
+                    alert('خطأ: ' + result.message);
+                }
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('حدث خطأ أثناء إرسال النموذج');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+        
+        // Delete partner card
+        async function deletePartnerCard(cardId, cardCode) {
+            if (!confirm(`هل أنت متأكد من حذف الرحلة "${cardCode}"؟`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/partner/delete-card/${cardId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error deleting card:', error);
+                alert('حدث خطأ أثناء حذف الرحلة');
+            }
+        }
+        
+        // Refresh statistics
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/partner/stats');
+                const data = await response.json();
+                
+                if (data.success !== false) {
+                    document.getElementById('totalTrips').textContent = data.totalTrips + ' رحلة';
+                    document.getElementById('totalBookings').textContent = data.totalBookings + ' حجز';
+                    document.getElementById('totalRevenue').textContent = data.totalRevenue.toLocaleString() + ' جنيه';
+                    document.getElementById('pendingTrips').textContent = data.pendingTrips + ' رحلة';
+                    
+                    // Update statistics display elements if they exist
+                    const totalTripsEl = document.getElementById('currentTripCount');
+                    if (totalTripsEl) totalTripsEl.textContent = data.totalTrips;
+                    
+                    const pendingReservationsEl = document.getElementById('pendingReservations');
+                    if (pendingReservationsEl) pendingReservationsEl.textContent = data.pendingReservations + ' في الانتظار';
+                    
+                    const confirmedReservationsEl = document.getElementById('confirmedReservations');
+                    if (confirmedReservationsEl) confirmedReservationsEl.textContent = data.confirmedReservations + ' مؤكد';
+                    
+                    const rejectedReservationsEl = document.getElementById('rejectedReservations');
+                    if (rejectedReservationsEl) rejectedReservationsEl.textContent = data.rejectedReservations + ' مرفوض';
+                }
+            } catch (error) {
+                console.error('Error refreshing stats:', error);
+            }
+        }
+
+        // Load dashboard data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+            loadReportsData(); // Load reports immediately without waiting for Chart.js
+            
+            // Initialize offer type dropdown
+            if (typeSelect && offerTypeSelect) {
+                typeSelect.addEventListener('change', updateOfferTypeOptions);
+                updateOfferTypeOptions();
+            }
+            
+            // Date validation for partner form
+            const travelDateInput = document.querySelector('input[name="travel_date"]');
+            const offerExpiryInput = document.querySelector('input[name="offer_expiry_date"]');
+            
+            function validatePartnerDates() {
+                if (travelDateInput && offerExpiryInput && travelDateInput.value && offerExpiryInput.value) {
+                    const travelDate = new Date(travelDateInput.value);
+                    const expiryDate = new Date(offerExpiryInput.value);
+                    
+                    if (expiryDate >= travelDate) {
+                        offerExpiryInput.setCustomValidity('تاريخ انتهاء العرض يجب أن يكون قبل تاريخ السفر');
+                        offerExpiryInput.style.borderColor = '#ef4444';
+                        return false;
+                    } else {
+                        offerExpiryInput.setCustomValidity('');
+                        offerExpiryInput.style.borderColor = '#34729C';
+                        return true;
+                    }
+                }
+            }
+            
+            if (travelDateInput && offerExpiryInput) {
+                travelDateInput.addEventListener('change', validatePartnerDates);
+                offerExpiryInput.addEventListener('change', validatePartnerDates);
+                
+                // Set max date for expiry based on travel date
+                travelDateInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const travelDate = new Date(this.value);
+                        travelDate.setDate(travelDate.getDate() - 1); // Set max to one day before travel
+                        offerExpiryInput.max = travelDate.toISOString().split('T')[0];
+                    }
+                });
+                
+                // Set min date for travel based on expiry date
+                offerExpiryInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const expiryDate = new Date(this.value);
+                        expiryDate.setDate(expiryDate.getDate() + 1); // Set min to one day after expiry
+                        travelDateInput.min = expiryDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+        });
+
+        async function loadDashboardStats() {
+            try {
+                await refreshStats();
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        // Reports functionality (simplified without Chart.js)
+        async function loadReportsData() {
+            try {
+                const response = await fetch('/api/partner/reports');
+                const data = await response.json();
+                
+                if (data.success === false) {
+                    console.error('Failed to load reports:', data.message);
+                    return;
+                }
+                
+                // Update simple displays and charts
+                updateRevenueOverview(data.monthlyRevenue);
+                updatePerformanceMetrics(data.topTrips);
+                updateBookingStatusOverview(data.bookingStatusStats);
+                updatePaymentStatusOverview(data.paymentStatusStats);
+                updateTripTypesStats(data.tripTypeStats);
+                updateRecentActivity(data.recentActivity);
+                
+            } catch (error) {
+                console.error('Error loading reports:', error);
+            }
+        }
+        
+        function updateRevenueOverview(monthlyData) {
+            // Calculate total revenue
+            const totalRevenue = monthlyData.reduce((sum, item) => sum + item.revenue, 0);
+            document.getElementById('totalRevenueAmount').textContent = totalRevenue.toLocaleString() + ' ج.م';
+            
+            // Create simple revenue chart
+            const chartContainer = document.getElementById('revenueChartSimple');
+            
+            const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
+                           'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            
+            if (monthlyData.length === 0) {
+                chartContainer.innerHTML = '<div class="loading">لا توجد بيانات للإيرادات</div>';
+                return;
+            }
+            
+            chartContainer.innerHTML = monthlyData.map(item => {
+                const monthName = `${months[item._id.month - 1]} ${item._id.year}`;
+                return `
+                    <div class="revenue-month">
+                        <span class="revenue-month-name">${monthName}</span>
+                        <span class="revenue-month-amount">${item.revenue.toLocaleString()} ج.م</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updatePerformanceMetrics(topTrips) {
+            const topTrip = topTrips.length > 0 ? topTrips[0] : null;
+            const topTripEl = document.getElementById('topTrip');
+            const conversionRateEl = document.getElementById('conversionRate');
+            const avgBookingValueEl = document.getElementById('avgBookingValue');
+            
+            if (topTrip) {
+                topTripEl.textContent = topTrip.cardDetails.code || 'لا توجد بيانات';
+                
+                // Calculate conversion rate (confirmed bookings / total bookings)
+                const totalBookings = topTrips.reduce((sum, trip) => sum + trip.bookings, 0);
+                const conversionRate = totalBookings > 0 ? ((topTrip.bookings / totalBookings) * 100).toFixed(1) : 0;
+                conversionRateEl.textContent = conversionRate + '%';
+                
+                // Calculate average booking value
+                const totalRevenue = topTrips.reduce((sum, trip) => sum + trip.revenue, 0);
+                const avgValue = totalBookings > 0 ? (totalRevenue / totalBookings).toFixed(0) : 0;
+                avgBookingValueEl.textContent = avgValue + ' ج.م';
+            } else {
+                topTripEl.textContent = 'لا توجد بيانات';
+                conversionRateEl.textContent = '0%';
+                avgBookingValueEl.textContent = '0 ج.م';
+            }
+        }
+        
+        function updateBookingStatusOverview(statusData) {
+            const statusMap = {
+                'pending': { element: 'pendingCount', progress: 'pendingProgress' },
+                'confirmed': { element: 'confirmedCount', progress: 'confirmedProgress' },
+                'rejected': { element: 'rejectedCount', progress: 'rejectedProgress' }
+            };
+            
+            // Calculate total for percentage
+            const total = statusData.reduce((sum, item) => sum + item.count, 0);
+            
+            // Reset all counts
+            Object.values(statusMap).forEach(status => {
+                const countEl = document.getElementById(status.element);
+                const progressEl = document.getElementById(status.progress);
+                if (countEl) countEl.textContent = '0';
+                if (progressEl) progressEl.style.width = '0%';
+            });
+            
+            // Update with actual data
+            statusData.forEach(item => {
+                const status = statusMap[item._id];
+                if (status) {
+                    const countEl = document.getElementById(status.element);
+                    const progressEl = document.getElementById(status.progress);
+                    
+                    if (countEl) countEl.textContent = item.count;
+                    if (progressEl) {
+                        const percentage = total > 0 ? (item.count / total) * 100 : 0;
+                        progressEl.style.width = percentage + '%';
+                    }
+                }
+            });
+        }
+        
+        function updatePaymentStatusOverview(paymentData) {
+            const paymentMap = {
+                'paid': { element: 'paidCount', progress: 'paidProgress' },
+                'pending': { element: 'paymentPendingCount', progress: 'paymentPendingProgress' },
+                'cancelled': { element: 'cancelledCount', progress: 'cancelledProgress' }
+            };
+            
+            // Calculate total for percentage
+            const total = paymentData.reduce((sum, item) => sum + item.count, 0);
+            
+            // Reset all counts
+            Object.values(paymentMap).forEach(payment => {
+                const countEl = document.getElementById(payment.element);
+                const progressEl = document.getElementById(payment.progress);
+                if (countEl) countEl.textContent = '0';
+                if (progressEl) progressEl.style.width = '0%';
+            });
+            
+            // Update with actual data
+            paymentData.forEach(item => {
+                const payment = paymentMap[item._id];
+                if (payment) {
+                    const countEl = document.getElementById(payment.element);
+                    const progressEl = document.getElementById(payment.progress);
+                    
+                    if (countEl) countEl.textContent = item.count;
+                    if (progressEl) {
+                        const percentage = total > 0 ? (item.count / total) * 100 : 0;
+                        progressEl.style.width = percentage + '%';
+                    }
+                }
+            });
+        }
+        
+        function updateTripTypesStats(tripTypeData) {
+            const container = document.getElementById('tripTypesStats');
+            
+            const typeLabels = {
+                'omrah': 'عمرة',
+                '7ag': 'حج',
+                'ramadan': 'رمضان',
+                'external_tour': 'رحلة خارجية',
+                'internal_tour': 'رحلة داخلية'
+            };
+            
+            if (tripTypeData.length === 0) {
+                container.innerHTML = '<div class="loading">لا توجد بيانات متاحة</div>';
+                return;
+            }
+            
+            container.innerHTML = tripTypeData.map(type => `
+                <div class="trip-type-card">
+                    <h4>${typeLabels[type._id] || type._id}</h4>
+                    <div class="trip-type-stats-item">
+                        <span>عدد الرحلات:</span>
+                        <span>${type.trips}</span>
+                    </div>
+                    <div class="trip-type-stats-item">
+                        <span>عدد الحجوزات:</span>
+                        <span>${type.bookings}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateRecentActivity(activities) {
+            const container = document.getElementById('recentActivity');
+            
+            if (activities.length === 0) {
+                container.innerHTML = '<div class="loading">لا يوجد نشاط حديث</div>';
+                return;
+            }
+            
+            const statusLabels = {
+                'pending': 'في الانتظار',
+                'confirmed': 'مؤكد',
+                'rejected': 'مرفوض'
+            };
+            
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-info">
+                        <h5>حجز جديد - ${activity.card.code}</h5>
+                        <p>العميل: ${activity.user.username} | التاريخ: ${new Date(activity.currentDate).toLocaleDateString('ar-EG')}</p>
+                    </div>
+                    <span class="activity-status ${activity.partnerStatus}">
+                        ${statusLabels[activity.partnerStatus] || activity.partnerStatus}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Partner reservation management functions
+        async function confirmReservation(reservationId) {
+            const notesTextarea = document.getElementById(`notes-${reservationId}`);
+            const notes = notesTextarea ? notesTextarea.value.trim() : '';
+            
+            if (!confirm('هل أنت متأكد من تأكيد هذا الحجز؟')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/partner/reservation/${reservationId}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ notes })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('تم تأكيد الحجز بنجاح');
+                    location.reload(); // Refresh to show updated status
+                } else {
+                    alert('خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error confirming reservation:', error);
+                alert('حدث خطأ أثناء تأكيد الحجز');
+            }
+        }
+
+        async function rejectReservation(reservationId) {
+            const notesTextarea = document.getElementById(`notes-${reservationId}`);
+            const notes = notesTextarea ? notesTextarea.value.trim() : '';
+            
+            if (!notes) {
+                alert('يرجى إضافة سبب الرفض في الملاحظات');
+                return;
+            }
+            
+            if (!confirm('هل أنت متأكد من رفض هذا الحجز؟')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/partner/reservation/${reservationId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ notes })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('تم رفض الحجز');
+                    location.reload(); // Refresh to show updated status
+                } else {
+                    alert('خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error rejecting reservation:', error);
+                alert('حدث خطأ أثناء رفض الحجز');
+            }
+        }
+
+        // ...existing functions...
+    </script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="/js/chat-inbox.js" defer></script>
+</body>
+</html>

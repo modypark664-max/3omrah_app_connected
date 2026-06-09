@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: rehlatty-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: NODE_ENV
+        value: production

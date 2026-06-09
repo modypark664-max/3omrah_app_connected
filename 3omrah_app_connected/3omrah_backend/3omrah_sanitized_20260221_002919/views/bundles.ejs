@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/bundles.css">
+    <link rel="stylesheet" href="/home.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title><%= title %> - منصة العمرة</title>
+</head>
+<body>
+        <%-include("navbar")%>
+<section id="packages" class="packages-section"> 
+  <div class="container">
+    <div class="main-content-wrapper">
+      <main class="packages-content">
+        <header class="packages-header">
+          <h1>
+            <% if (currentRoute === '/bundles') { %>
+              <%= pageContents.bundles_page_title || 'باقات العمرة الحصرية في مكة المكرمة' %>
+            <% } else if (currentRoute === '/inner-tours') { %>
+              <%= pageContents.inner_tours_page_title || 'الرحلات الداخلية المميزة' %>
+            <% } else if (currentRoute === '/external-tours') { %>
+              <%= pageContents.external_tours_page_title || 'الرحلات الخارجية الاستثنائية' %>
+            <% } else if (currentRoute === '/7ag-tours') { %>
+              <%= pageContents.haj_tours_page_title || 'رحلات الحج المباركة' %>
+            <% } else if (currentRoute === '/ramadan-tours') { %>
+              <%= pageContents.ramadan_tours_page_title || 'رحلات رمضان الروحانية' %>
+            <% } else { %>
+              <%= pageContents.all_packages_page_title || 'جميع الباقات والرحلات المتاحة' %>
+            <% } %>
+          </h1>
+          <p>
+            <% if (currentRoute === '/bundles') { %>
+              <%= pageContents.bundles_page_description || 'استمتع مع رحلة عمرة بأرقى الباقات العمرية الحصرية في مكة المكرمة، والتي تجمع بين الراحة والخدمات المميزة لتجعل رحلتك الإيمانية أكثر سلاسة وطمأنينة.' %>
+            <% } else if (currentRoute === '/inner-tours') { %>
+              <%= pageContents.inner_tours_page_description || 'اكتشف جمال المملكة العربية السعودية مع رحلاتنا الداخلية المميزة التي تأخذك في جولة استكشافية رائعة.' %>
+            <% } else if (currentRoute === '/external-tours') { %>
+              <%= pageContents.external_tours_page_description || 'استكشف العالم مع رحلاتنا الخارجية المختارة بعناية لتوفر لك تجربة سفر لا تُنسى.' %>
+            <% } else if (currentRoute === '/7ag-tours') { %>
+              <%= pageContents.haj_tours_page_description || 'أدِ فريضة الحج مع باقاتنا المتنوعة التي تلبي جميع الاحتياجات، من الاقتصادية إلى الفاخرة، لتجعل رحلتك المقدسة مريحة ومباركة.' %>
+            <% } else if (currentRoute === '/ramadan-tours') { %>
+              <%= pageContents.ramadan_tours_page_description || 'اقضِ شهر رمضان المبارك في الأماكن المقدسة مع باقاتنا الرمضانية الخاصة التي تجمع بين العبادة والراحة في أجواء روحانية فريدة.' %>
+            <% } else { %>
+              <%= pageContents.all_packages_page_description || 'اختر من بين مجموعة متنوعة من الباقات والرحلات المصممة خصيصاً لتلبية جميع احتياجاتك ومتطلباتك.' %>
+            <% } %>
+          </p>
+        </header>
+
+        <% 
+          // Build offer types list based on route or provided filterOptions
+          let offerTypesList = [];
+          if (filterOptions && Array.isArray(filterOptions.offerTypes) && filterOptions.offerTypes.length > 0) {
+            offerTypesList = filterOptions.offerTypes;
+          } else {
+            if (currentRoute === '/7ag-tours' || currentRoute === '/ramadan-tours') {
+              offerTypesList = ['اقتصادي', 'مميز', 'فاخر'];
+            } else if (currentRoute === '/external-tours') {
+              offerTypesList = ['رحلات بتاشيره', 'رحلات بدون تاشيره', 'رحلات شهر العسل'];
+            } else if (currentRoute === '/inner-tours') {
+              offerTypesList = ['رحله يوم الواحد', 'رحلات شهر العسل', 'رحلات سياحيه'];
+            } else {
+              // Default for omrah/bundles page
+              offerTypesList = ['اقتصادي', 'مميز', 'فاخر'];
+            }
+          }
+          const filterVals = currentFilters || {};
+          const showChooser = !filterVals.offer_type && filterVals.show_all !== '1'; // hide chooser if user clicked "Show All"
+        %>
+
+        <% if (showChooser) { %>
+          <section class="offer-type-chooser" aria-label="اختر نوع العرض لعرض الباقات">
+            <div class="offer-type-grid">
+              <% offerTypesList.forEach(function(t){ %>
+                <button type="button" class="offer-type-card" data-offer-type="<%= t %>">
+                  <div class="offer-type-title">عرض عروض <span><%= t %></span></div>
+                  <div class="offer-type-hint">اضغط لعرض الباقات</div>
+                </button>
+              <% }) %>
+              <button type="button" class="offer-type-card all" data-offer-type="__ALL__">
+                <div class="offer-type-title">عرض جميع العروض</div>
+                <div class="offer-type-hint">بدون اختيار نوع محدد</div>
+              </button>
+            </div>
+          </section>
+        <% } %>
+
+        <% if (!showChooser) { %>
+          <div class="packages-grid">
+            <% if (cards && cards.length > 0) { %>
+              <% cards.forEach(card => { %>
+                <%- include('partials/package-card', { card: card, user: user }) %>
+              <% }) %>
+            <% } else { %>
+              <div class="no-packages">
+                <h3>لا توجد باقات متاحة</h3>
+                <p>لم يتم العثور على باقات تطابق معايير البحث المحددة. يرجى تعديل الفلاتر والمحاولة مرة أخرى.</p>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+      </main>
+
+      <aside class="filters-sidebar">
+        <form action="<%= currentRoute || '/bundles' %>" method="GET" id="filterForm">
+          <input type="hidden" name="show_all" id="show_all" value="<%= currentFilters.show_all || '' %>">
+          <h3>ابحث عن العرض المناسب</h3>
+          
+          <div class="filter-group" style="display: none;">
+            <label for="offer_type">نوع العرض</label>
+            <select name="offer_type" id="offer_type" class="filter-select">
+              <option value="">جميع الأنواع</option>
+              <% if (filterOptions.offerTypes && filterOptions.offerTypes.length > 0) { %>
+                <% filterOptions.offerTypes.forEach(type => { %>
+                  <option value="<%= type %>" <%= currentFilters.offer_type === type ? 'selected' : '' %>><%= type %></option>
+                <% }) %>
+              <% } else { %>
+                <!-- Default offer types based on current route -->
+                <% if (currentRoute === '/7ag-tours' || currentRoute === '/ramadan-tours') { %>
+                  <option value="اقتصادي" <%= currentFilters.offer_type === 'اقتصادي' ? 'selected' : '' %>>اقتصادي</option>
+                  <option value="مميز" <%= currentFilters.offer_type === 'مميز' ? 'selected' : '' %>>مميز</option>
+                  <option value="فاخر" <%= currentFilters.offer_type === 'فاخر' ? 'selected' : '' %>>فاخر</option>
+                <% } else if (currentRoute === '/external-tours') { %>
+                  <option value="رحلات بتاشيره" <%= currentFilters.offer_type === 'رحلات بتاشيره' ? 'selected' : '' %>>رحلات بتاشيره</option>
+                  <option value="رحلات بدون تاشيره" <%= currentFilters.offer_type === 'رحلات بدون تاشيره' ? 'selected' : '' %>>رحلات بدون تاشيره</option>
+                  <option value="رحلات شهر العسل" <%= currentFilters.offer_type === 'رحلات شهر العسل' ? 'selected' : '' %>>رحلات شهر العسل</option>
+                <% } else if (currentRoute === '/inner-tours') { %>
+                  <option value="رحله يوم الواحد" <%= currentFilters.offer_type === 'رحله يوم الواحد' ? 'selected' : '' %>>رحله يوم الواحد</option>
+                  <option value="رحلات شهر العسل" <%= currentFilters.offer_type === 'رحلات شهر العسل' ? 'selected' : '' %>>رحلات شهر العسل</option>
+                  <option value="رحلات سياحيه" <%= currentFilters.offer_type === 'رحلات سياحيه' ? 'selected' : '' %>>رحلات سياحيه</option>
+                <% } else { %>
+                  <!-- For omrah or bundles page, show traditional types -->
+                  <option value="اقتصادي" <%= currentFilters.offer_type === 'اقتصادي' ? 'selected' : '' %>>اقتصادي</option>
+                  <option value="مميز" <%= currentFilters.offer_type === 'مميز' ? 'selected' : '' %>>مميز</option>
+                  <option value="فاخر" <%= currentFilters.offer_type === 'فاخر' ? 'selected' : '' %>>فاخر</option>
+                <% } %>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="going_route">مدينة بداية البرنامج</label>
+            <select name="going_route" id="going_route" class="filter-select">
+              <option value="">جميع المدن</option>
+              <% filterOptions.routes.forEach(route => { %>
+                <option value="<%= route %>" <%= currentFilters.going_route === route ? 'selected' : '' %>><%= route %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="hotel_type">نوع الفندق</label>
+            <select name="hotel_type" id="hotel_type" class="filter-select">
+              <option value="">جميع الأنواع</option>
+              <% filterOptions.hotelTypes.forEach(type => { %>
+                <option value="<%= type %>" <%= currentFilters.hotel_type === type ? 'selected' : '' %>><%= type %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="days">عدد أيام الرحلة</label>
+            <select name="days" id="days" class="filter-select">
+              <option value="">جميع المدد</option>
+              <% filterOptions.dayOptions.forEach(day => { %>
+                <option value="<%= day %>" <%= currentFilters.days === String(day) ? 'selected' : '' %>><%= day %> أيام</option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="nights">عدد ليالي الرحلة</label>
+            <select name="nights" id="nights" class="filter-select">
+              <option value="">جميع المدد</option>
+              <% filterOptions.nightOptions.forEach(night => { %>
+                <option value="<%= night %>" <%= currentFilters.nights === String(night) ? 'selected' : '' %>><%= night %> ليالي</option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="plane_company">شركات الطيران</label>
+            <select name="plane_company" id="plane_company" class="filter-select">
+              <option value="">جميع الشركات</option>
+              <% filterOptions.airlines.forEach(airline => { %>
+                <option value="<%= airline %>" <%= currentFilters.plane_company === airline ? 'selected' : '' %>><%= airline %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="company">شركة السياحه</label>
+            <select name="company" id="company" class="filter-select">
+              <option value="">جميع الشركات</option>
+              <% if (filterOptions.companies && filterOptions.companies.length > 0) { %>
+                <% filterOptions.companies.forEach(companyName => { %>
+                  <option value="<%= companyName %>" <%= currentFilters.company === companyName ? 'selected' : '' %>><%= companyName %></option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="travel_date_from">تاريخ الذهاب (من)</label>
+            <input type="date" name="travel_date_from" id="travel_date_from" 
+                   value="<%= currentFilters.travel_date_from || '' %>" class="date-input">
+          </div>
+
+          <div class="filter-group">
+            <label for="travel_date_to">تاريخ الذهاب (إلى)</label>
+            <input type="date" name="travel_date_to" id="travel_date_to" 
+                   value="<%= currentFilters.travel_date_to || '' %>" class="date-input">
+          </div>
+
+          <div class="filter-group">
+            <label>نطاق السعر</label>
+            <div class="price-range">
+              <input type="number" name="min_price" placeholder="الحد الأدنى" 
+                     value="<%= currentFilters.min_price || '' %>" class="price-input">
+              <span>إلى</span>
+              <input type="number" name="max_price" placeholder="الحد الأقصى" 
+                     value="<%= currentFilters.max_price || '' %>" class="price-input">
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button type="submit" class="btn-filter">تطبيق الفلاتر</button>
+            <a href="<%= currentRoute || '/bundles' %>" class="btn-reset">إعادة تعيين</a>
+          </div>
+        </form>
+      </aside>
+    </div>
+  </div>
+</section>
+<%-include("footer")%>
+<style>
+
+.header-section {
+  background: linear-gradient(180deg, #1e5470 29.81%, #5c8397 60.1%, #d3f0f7 100%);
+  padding: 20px 0;
+  min-height: 120px;
+}
+
+/* Ensure footer takes full width and proper spacing */
+.site-footer {
+  width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important;
+  margin-right: calc(-50vw + 50%) !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  max-width: none !important;
+  margin-bottom: 0 !important;
+}
+
+/* Remove any unwanted spacing at the bottom */
+body {
+  margin: 0 !important;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  min-height: 100vh;
+}
+
+html {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh;
+}
+
+.bottom-navbar,
+.bottom-app-navbar {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Override bottom navbar body padding on desktop */
+@media (min-width: 769px) {
+  body {
+    padding-bottom: 0 !important;
+  }
+}
+* {
+  direction: rtl;
+}
+.packages-section {
+  background-color: #d3f0f7;
+  padding: 40px 0;
+  min-height: auto;
+  width: 100%;
+  overflow: visible;
+}
+
+.main-content-wrapper {
+  display: flex;
+  gap: 40px;
+  direction: ltr;
+  align-items: flex-start;
+  min-height: auto;
+  overflow: visible;
+}
+
+.packages-content {
+  flex: 1;
+}
+
+.packages-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding: 0 20px;
+  direction: ltr;
+}
+
+.packages-header h1 {
+  color: #1E5470;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.packages-header p {
+  color: #1E5470;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 10px;
+}
+
+/* Offer type chooser */
+.offer-type-chooser {
+  margin: 10px auto 40px;
+  max-width: 1000px;
+}
+.offer-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.offer-type-card {
+  background: #ffffff;
+  border: 2px solid #e1e8ed;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  color: #1E5470;
+}
+.offer-type-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  border-color: #34729C;
+}
+.offer-type-card .offer-type-title {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.offer-type-card .offer-type-title span { color: #34729C; }
+.offer-type-card .offer-type-hint {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+.offer-type-card.all {
+  background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+  color: #fff;
+  border-color: transparent;
+}
+.offer-type-card.all .offer-type-hint { color: #e6eef6; }
+
+.packages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  align-items: start;
+}
+
+.package-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-img {
+  width: 100%;
+  height: 280px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.card-body {
+  padding: 25px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.price {
+  font-weight: 700;
+  color: #1E5470;
+  font-size: 1.3rem;
+}
+
+.duration {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.duration img {
+  width: 18px;
+  height: 18px;
+}
+
+.package-card h3 {
+  color: #1E5470;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.package-card p {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.package-details-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #1E5470;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.package-details-link:hover {
+  color: #34729C;
+}
+
+.arrow-circle {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #1E5470;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.package-details-link:hover .arrow-circle {
+  background: #1E5470;
+  transform: translateX(-3px);
+}
+
+.arrow-circle img {
+  width: 16px;
+  height: 16px;
+}
+
+.filters-sidebar {
+  width: 300px;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.filters-sidebar h3 {
+  color: #1E5470;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #1E5470;
+}
+
+.filter-select,
+.date-input,
+.price-input,
+.text-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e1e8ed;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: border-color 0.3s ease;
+  direction: rtl;
+}
+
+.filter-select:focus,
+.date-input:focus,
+.price-input:focus,
+.text-input:focus {
+  outline: none;
+  border-color: #34729C;
+  box-shadow: 0 0 0 3px rgba(52, 114, 156, 0.1);
+}
+
+.price-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.price-range span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.price-input {
+  flex: 1;
+}
+
+.filter-actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-filter,
+.btn-reset {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+}
+
+.btn-filter {
+  background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+  color: white;
+}
+
+.btn-filter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(52, 114, 156, 0.3);
+}
+
+.btn-reset {
+  background: #f8fafc;
+  color: #64748b;
+  border: 2px solid #e1e8ed;
+}
+
+.btn-reset:hover {
+  background: #e1e8ed;
+  color: #1E5470;
+}
+
+.no-packages {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+  grid-column: 1 / -1;
+}
+
+.no-packages h3 {
+  color: #1E5470;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.no-packages p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .main-content-wrapper {
+    flex-direction: column;
+    gap: 20px;
+    overflow: visible;
+    min-height: auto;
+  }
+  
+  .filters-sidebar {
+    order: -1;
+    margin-bottom: 30px;
+    width: 100%;
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  
+  .packages-content {
+    overflow: visible;
+    min-height: auto;
+  }
+  
+  .packages-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .card-img {
+    height: 220px;
+    padding: 8px;
+  }
+  
+  .price-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-actions {
+    flex-direction: row;
+  }
+  
+  .packages-header h1 {
+    font-size: 2rem;
+  }
+  
+  .packages-header p {
+    font-size: 1rem;
+  }
+  
+  /* Ensure mobile viewport can scroll properly */
+  body {
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+  
+  .packages-section {
+    padding: 20px 0;
+    min-height: auto;
+    overflow: visible;
+  }
+}
+
+/* Expired Card Styles */
+.package-card.expired-card {
+  position: relative;
+  opacity: 0.7;
+  filter: grayscale(50%);
+}
+
+.expired-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 20px;
+  border-radius: 20px;
+}
+
+.expired-badge {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  text-align: center;
+}
+
+.package-card.expired-card .card-img,
+.package-card.expired-card .package-image {
+  filter: grayscale(30%);
+}
+
+.package-card.expired-card:hover {
+  transform: none;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 480px) {
+  .packages-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .card-img {
+    height: 200px;
+    padding: 6px;
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  .packages-header h1 {
+    font-size: 1.7rem;
+  }
+}
+</style>
+
+<script id="user-data" type="application/json"><%- JSON.stringify(user || null).replace(/<\//g, '<\\/') %></script>
+
+<script>
+// Define user variable for card-interactions.js
+const userDataNode = document.getElementById('user-data');
+const user = userDataNode ? JSON.parse(userDataNode.textContent || 'null') : null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  const filterForm = document.getElementById('filterForm');
+  const filterInputs = filterForm.querySelectorAll('select, input');
+  
+  // Auto-submit form when filters change
+  filterInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      // Small delay to allow for multiple quick changes
+      clearTimeout(this.submitTimeout);
+      this.submitTimeout = setTimeout(() => {
+        filterForm.submit();
+      }, 500);
+    });
+  });
+  
+  // Prevent auto-submit for text inputs while typing
+  const textInputs = filterForm.querySelectorAll('input[type="number"]');
+  textInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      clearTimeout(this.submitTimeout);
+    });
+  });
+
+  // Wire offer-type chooser buttons
+  const chooserButtons = document.querySelectorAll('.offer-type-card');
+  chooserButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!filterForm) return;
+      const select = document.getElementById('offer_type');
+      const showAllInput = document.getElementById('show_all');
+      if (!select) return;
+      const val = btn.getAttribute('data-offer-type');
+      // __ALL__ clears the filter and sets a flag to show all results
+      if (val === '__ALL__') {
+        select.value = '';
+        if (showAllInput) showAllInput.value = '1';
+      } else {
+        select.value = val;
+        if (showAllInput) showAllInput.value = '';
+      }
+      filterForm.submit();
+    });
+  });
+});
+</script>
+
+<%- include('bottom_app_navbar') %>
+
+<script src="/js/card-interactions.js"></script>
+
+</body>
+</html>

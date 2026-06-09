@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلبات الرحلات الخاصة - لوحة التحكم</title>
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <style>
+        :root {
+            --primary: #1E5470;
+            --secondary: #34729C;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 1.8rem; color: var(--primary); }
+        .back-btn { text-decoration: none; color: var(--secondary); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        .card { background: var(--white); border-radius: 15px; padding: 25px; box-shadow: 0 10px 25px rgba(30, 84, 112, 0.1); border: 1px solid var(--border); margin-bottom: 30px; }
+        .card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { text-align: right; padding: 15px; border-bottom: 2px solid var(--border); color: var(--secondary); font-size: 0.9rem; }
+        .data-table td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; vertical-align: top; }
+        .data-table tr:hover { background: #f1f5f9; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-contacted { background: #dbeafe; color: #1e40af; }
+        .badge-completed { background: #dcfce7; color: #166534; }
+        .badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+        .details-box { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem; }
+        .details-item { margin-bottom: 5px; display: flex; gap: 10px; }
+        .details-label { font-weight: 700; color: var(--primary); min-width: 100px; }
+
+        .status-form select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎒 طلبات الرحلات الخاصة (رحلتك حسب اختيارك)</h1>
+            <a href="/admin/dashboard" class="back-btn">← العودة للوحة التحكم</a>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📋 قائمة الطلبات الواردة</div>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>المستخدم</th>
+                            <th>نوع الرحلة</th>
+                            <th>التفاصيل</th>
+                            <th>الحالة</th>
+                            <th>تحديث الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (requests && requests.length > 0) { %>
+                            <% requests.forEach(request => { %>
+                            <tr>
+                                <td><%= new Date(request.createdAt).toLocaleDateString('ar-EG') %></td>
+                                <td>
+                                    <strong><%= request.user ? request.user.username : 'ضيف' %></strong><br>
+                                    <small><%= request.user ? request.user.phoneNumber : '-' %></small>
+                                </td>
+                                <td>
+                                    <% 
+                                        let typeLabel = request.tripType;
+                                        if(request.tripType === 'omrah') typeLabel = 'عمرة';
+                                        else if(request.tripType === 'omrah_ramadan') typeLabel = 'عمرة رمضان';
+                                        else if(request.tripType === 'internal_tour') typeLabel = 'رحلة داخلية';
+                                        else if(request.tripType === 'external_tour') typeLabel = 'رحلة خارجية';
+                                    %>
+                                    <span class="badge badge-contacted"><%= typeLabel %></span>
+                                </td>
+                                <td>
+                                    <div class="details-box">
+                                        <% for (const [key, value] of Object.entries(request.details || {})) { %>
+                                            <div class="details-item">
+                                                <span class="details-label"><%= key %>:</span>
+                                                <span><%= Array.isArray(value) ? value.join(', ') : value %></span>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <% 
+                                        let statusClass = 'badge-pending';
+                                        let statusText = 'قيد الانتظار';
+                                        if(request.status === 'contacted') { statusClass = 'badge-contacted'; statusText = 'تم التواصل'; }
+                                        else if(request.status === 'completed') { statusClass = 'badge-completed'; statusText = 'مكتمل'; }
+                                        else if(request.status === 'cancelled') { statusClass = 'badge-cancelled'; statusText = 'ملغي'; }
+                                    %>
+                                    <span class="badge <%= statusClass %>"><%= statusText %></span>
+                                </td>
+                                <td>
+                                    <form action="/admin/custom-trips/status/<%= request._id %>" method="POST" class="status-form">
+                                        <select name="status" onchange="this.form.submit()">
+                                            <option value="pending" <%= request.status === 'pending' ? 'selected' : '' %>>قيد الانتظار</option>
+                                            <option value="contacted" <%= request.status === 'contacted' ? 'selected' : '' %>>تم التواصل</option>
+                                            <option value="completed" <%= request.status === 'completed' ? 'selected' : '' %>>مكتمل</option>
+                                            <option value="cancelled" <%= request.status === 'cancelled' ? 'selected' : '' %>>ملغي</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px;">لا توجد طلبات حالياً</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

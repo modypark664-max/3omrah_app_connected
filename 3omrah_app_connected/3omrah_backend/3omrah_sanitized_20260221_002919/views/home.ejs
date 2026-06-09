@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="home.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>رحلة العمره</title>
+</head>
+<body>
+
+  <%-include("navbar")%>
+    <div class="hero-content dynamic-hero">
+      <div class="hero-text">
+        <h1><%= pageContents.hero_title || 'دعنا نصحبك في رحلة إلى مكة المكرمة، واستمتع بتجربة عمرة مريحة مع باقاتنا المتنوعة وعروضنا المميزة.' %></h1>
+        <% 
+          const heroDescriptionDefault = 'ابدأ رحلتك إلى مكة المكرمة معنا. استمتع بأفضل الباقات والخدمات المتكاملة التي تجعل رحلتك مريحة وسهلة من البداية وحتى العودة.';
+          const heroDescriptionSource = pageContents.hero_description || heroDescriptionDefault;
+          const heroDescriptionLines = heroDescriptionSource
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+        %>
+        <% if (heroDescriptionLines.length > 0) { %>
+          <p>
+            <% heroDescriptionLines.forEach(function(line, idx) { %>
+              <span class="hero-description-line"><%= line %></span><% if (idx !== heroDescriptionLines.length - 1) { %><br><% } %>
+            <% }) %>
+          </p>
+        <% } else { %>
+          <p><%= heroDescriptionDefault %></p>
+        <% } %>
+        <a href="/contact" class="btn btn-primary contact-btn"><%= pageContents.hero_button_text || 'تواصل معنا' %></a>
+      </div>
+      <% 
+        const activeHero = (heroMedia || []).filter(m => m.isActive);
+        const mainHero = activeHero.length ? activeHero[0] : null;
+        const overlayMedia = activeHero.slice(1); // all remaining media for overlays
+      %>
+      <div class="hero-visual-wrapper">
+        <div class="hero-main-container">
+          <% if (mainHero) { %>
+            <% if (mainHero.type === 'video') { %>
+              <video class="hero-main-video" src="<%= mainHero.url %>" autoplay muted playsinline loop></video>
+            <% } else { %>
+              <img class="hero-main-image" src="<%= mainHero.url %>" alt="Hero Main"/>
+            <% } %>
+          <% } else { %>
+            <img class="hero-main-image" src="/imgs/Image_Hero.png" alt="Hero Default" />
+          <% } %>
+          
+          <!-- Overlay media items positioned at corners/sides -->
+          <% if (overlayMedia && overlayMedia.length) { overlayMedia.forEach((media, idx) => { 
+            const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'center-left', 'center-right'];
+            const position = positions[idx] || 'top-left';
+          %>
+            <div class="hero-overlay-media hero-overlay-<%= position %> hero-overlay-<%= idx+1 %>">
+              <% if (media.type === 'video') { %>
+                <video class="overlay-video" src="<%= media.url %>" autoplay muted playsinline loop></video>
+              <% } else { %>
+                <img class="overlay-image" src="<%= media.url %>" alt="Hero Overlay <%= idx+1 %>"/>
+              <% } %>
+            </div>
+          <% }) } %>
+          
+          <div class="hero-gradient-overlay"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<section id="umrah-packages" class="packages-section" style="margin-top: 100px;">
+  <div class="container">
+    <div class="packages-header">
+      <div class="packages-header-text">
+        <h2 class="section-title"><%= (sectionContents && sectionContents.omrah ? sectionContents.omrah.title : (pageContents.omrah_title || 'باقات العمرة')) %></h2>
+        <p class="section-subtitle"><%= (sectionContents && sectionContents.omrah ? sectionContents.omrah.description : (pageContents.omrah_description || 'معنا رحلة العمرة أصبحت أسهل وأكثر راحة، حيث نوفر لك باقات متنوعة تناسب جميع الاحتياجات والميزانيات')) %></p>
+      </div>
+      <a href="/bundles" class="btn-outline"><%= pageContents.omrah_button_text || pageContents.view_more_text || 'عرض المزيد' %></a>
+    </div>
+    <div class="packages-grid">
+      <% if (omrahCards && omrahCards.length > 0) { %>
+        <% omrahCards.forEach(card => { %>
+          <%- include('partials/package-card', { card: card, user: user }) %>
+        <% }) %>
+      <% } else { %>
+        <article class="package-card">
+          <img src="/imgs/Rectangle 33.png" alt="Package Image" class="package-image">
+          <div class="package-content">
+            <div class="package-info-header">
+              <div class="package-duration">
+                <img src="/imgs/calendar.svg" alt="calendar icon">
+                <span><%= pageContents.coming_soon_text || 'قريباً' %></span>
+              </div>
+            </div>
+            <h3><%= pageContents.omrah_no_packages_title || 'لا توجد باقات عمرة متاحة حالياً' %></h3>
+            <p><%= pageContents.omrah_no_packages_description || 'نحن نعمل على إضافة باقات عمرة مميزة قريباً. تابعونا للحصول على أفضل العروض والباقات المتاحة.' %></p>
+            <div class="package-price">
+              <span><%= pageContents.coming_soon_text || 'قريباً' %></span>
+            </div>
+            <div class="package-actions">
+              <a href="/contact" class="package-details-link">
+                <span><%= pageContents.contact_us_text || 'تواصل معنا' %></span>
+                <div class="arrow-circle">
+                  <img src="/imgs/Frame 94.png" alt="arrow icon">
+                </div>
+              </a>
+            </div>
+          </div>
+        </article>
+      <% } %>
+    </div>
+  </div>
+</section>
+<section id="partner-banner" class="partner-banner-section" <% if (partnerBanner && partnerBanner.backgroundImage) { %>style="background-image: url('<%= partnerBanner.backgroundImage %>'); background-size: cover; background-position: center; background-repeat: no-repeat;"<% } %>>
+  <div class="partner-banner-content">
+    <% if (partnerBanner) { %>
+      <h2><%= partnerBanner.title %></h2>
+      <div class="partner-banner-logo">
+        <p><%= partnerBanner.logoText %></p>
+        <span><%= partnerBanner.logoSubtext %></span>
+      </div>
+    <% } else { %>
+      <h2>نحن فخورون بكوننا شريكاً رسمياً<br >لقطار الحرمين السريع .</h2>
+      <div class="partner-banner-logo">
+        <p>قطار الحرمين السريع</p>
+        <span>HARAMIN HIGH SPEED RAILWAY</span>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+
+
+<section id="internal-trips" class="packages-section">
+  <div class="container">
+    <div class="packages-header">
+      <div class="packages-header-text">
+        <h2 class="section-title">
+          <%= (sectionContents && sectionContents.internal_tours ? sectionContents.internal_tours.title : (pageContents.internal_tours_title || 'العروض الرحلات الداخلية خلال رحلة العمرة')) %>
+        </h2>
+        <p class="section-subtitle">
+          <%= (sectionContents && sectionContents.internal_tours ? sectionContents.internal_tours.description : (pageContents.internal_tours_description || 'استمتع بأفضل العروض الداخلية على رحلات العمرة، مع باقات مصممة لتلبية جميع احتياجاتك بأسعار مميزة وخدمات شاملة.')) %>
+        </p>
+      </div>
+  <a href="/inner-tours" class="btn-outline"><%= pageContents.internal_tours_button_text || pageContents.view_more_text || 'عرض المزيد' %></a>
+    </div>
+    <div class="packages-grid">
+      <% if (internalTourCards && internalTourCards.length > 0) { %>
+        <% internalTourCards.forEach(card => { %>
+          <%- include('partials/package-card', { card: card, user: user }) %>
+        <% }) %>
+      <% } else { %>
+        <article class="package-card">
+          <img src="/imgs/Rectangle 33.png" alt="Package Image" class="package-image">
+          <div class="package-content">
+            <div class="package-info-header">
+              <div class="package-duration">
+                <img src="/imgs/calendar.svg" alt="calendar icon">
+                <span><%= pageContents.coming_soon_text || 'قريباً' %></span>
+              </div>
+            </div>
+            <h3><%= pageContents.internal_tours_no_packages_title || 'لا توجد رحلات داخلية متاحة حالياً' %></h3>
+            <p><%= pageContents.internal_tours_no_packages_description || 'نحن نعمل على إضافة رحلات داخلية مميزة قريباً. تابعونا للحصول على أفضل العروض والرحلات المتاحة.' %></p>
+            <div class="package-price">
+              <span><%= pageContents.coming_soon_text || 'قريباً' %></span>
+            </div>
+            <div class="package-actions">
+              <a href="/contact" class="package-details-link">
+                <span><%= pageContents.contact_us_text || 'تواصل معنا' %></span>
+                <div class="arrow-circle">
+                  <img src="/imgs/Frame 94.png" alt="arrow icon">
+                </div>
+              </a>
+            </div>
+          </div>
+        </article>
+      <% } %>
+    </div>
+  </div>
+</section>
+<section id="external-trips" class="packages-section">
+  <div class="container">
+    <div class="packages-header">
+      <div class="packages-header-text">
+        <h2 class="section-title">
+          <%= (sectionContents && sectionContents.external_tours ? sectionContents.external_tours.title : (pageContents.external_tours_title || 'العروض الرحلات الخارجية خلال رحلة العمرة')) %>
+        </h2>
+        <p class="section-subtitle">
+          <%= (sectionContents && sectionContents.external_tours ? sectionContents.external_tours.description : (pageContents.external_tours_description || 'اكتشف العالم مع رحلاتنا الخارجية المميزة، باقات مصممة لتجمع بين الروحانية والاستكشاف بأسعار مميزة وخدمات شاملة.')) %>
+        </p>
+      </div>
+  <a href="/external-tours" class="btn-outline"><%= pageContents.external_tours_button_text || pageContents.view_more_text || 'عرض المزيد' %></a>
+    </div>
+    <div class="packages-grid">
+      <% if (externalTourCards && externalTourCards.length > 0) { %>
+        <% externalTourCards.forEach(card => { %>
+          <%- include('partials/package-card', { card: card, user: user }) %>
+        <% }) %>
+      <% } else { %>
+        <article class="package-card">
+          <img src="/imgs/Rectangle 33.png" alt="Package Image" class="package-image">
+          <div class="package-content">
+            <div class="package-info-header">
+              <div class="package-duration">
+                <img src="/imgs/calendar.svg" alt="calendar icon">
+                <span><%= pageContents.coming_soon_text || 'قريباً' %></span>
+              </div>
+            </div>
+            <h3><%= pageContents.external_tours_no_packages_title || 'لا توجد رحلات خارجية متاحة حالياً' %></h3>
+            <p><%= pageContents.external_tours_no_packages_description || 'نحن نعمل على إضافة رحلات خارجية مميزة قريباً. تابعونا للحصول على أفضل العروض والرحلات المتاحة.' %></p>
+            <div class="package-price">
+              <span><%= pageContents.coming_soon_text || 'قريباً' %></span>
+            </div>
+            <div class="package-actions">
+              <a href="/contact" class="package-details-link">
+                <span><%= pageContents.contact_us_text || 'تواصل معنا' %></span>
+                <div class="arrow-circle">
+                  <img src="/imgs/Frame 94.png" alt="arrow icon">
+                </div>
+              </a>
+            </div>
+          </div>
+        </article>
+      <% } %>
+    </div>
+  </div>
+</section>
+<section id="partners" class="partners-section">
+  <div class="container">
+    <div class="partners-heading">
+      <h2><%= pageContents.partners_title || 'شركاء النجاح' %></h2>
+      <p><%= pageContents.partners_description || 'نتعاون مع العديد من شركات السياحه المرخصه من وزارة السياحة المصرية' %></p>
+    </div>
+    <div class="partners-logos-wrapper">
+      <div class="partners-logos-scroll">
+        <div class="partners-logos-track">
+          <% 
+            // Use partner logos if available and valid, otherwise use fallback images
+            let logoImages = [];
+            if (partnerLogos && partnerLogos.length > 0) {
+              logoImages = partnerLogos;
+            } else {
+              logoImages = [
+                '/imgs/Frame 1000002792.png',
+                '/imgs/Frame 1000002791.png', 
+                '/imgs/Frame 1000002790.png',
+                '/imgs/Frame 1000002792.png',
+                '/imgs/Frame 1000002791.png',
+                '/imgs/Frame 1000002790.png'
+              ];
+            }
+            
+            // Duplicate the logos for seamless loop
+            const duplicatedLogos = [...logoImages, ...logoImages];
+          %>
+          <% duplicatedLogos.forEach(function(logo, idx) { %>
+            <div class="partner-logo-item">
+              <img src="<%= logo %>" alt="شعار شريك رقم <%= (idx % logoImages.length) + 1 %>" onerror="this.src='/imgs/Frame 1000002790.png'" />
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="gallery" class="gallery-section">
+  <div class="container">
+    <div class="gallery-heading">
+      <h2><%= pageContents.gallery_title || 'عروض حصريه' %></h2>
+      <p><%= pageContents.gallery_description || 'نوفّر لعملائنا رحلة مريحة، مع مجموعة متنوعة من الخدمات المميزة التي تجعل كل سفر ممتعاً وخالياً من المتاعب.' %></p>
+    </div>
+    <div class="gallery-grid<% if (!galleryCards || galleryCards.length !== 3) { %> image-layout<% } %>">
+      <% if (galleryCards && galleryCards.length === 3) { %>
+        <% galleryCards.forEach(function(card) { %>
+          <%- include('partials/package-card', { card: card, user: user }) %>
+        <% }) %>
+      <% } else { %>
+        <div class="gallery-item gallery-item-1">
+          <img src="/imgs/Rectangle 10.png" alt="Gallery image 1">
+        </div>
+        <div class="gallery-item gallery-item-2">
+          <img src="/imgs/Rectangle 11.png" alt="Gallery image 2">
+        </div>
+        <div class="gallery-item gallery-item-3">
+          <img src="/imgs/Rectangle 12.png" alt="Gallery image 3">
+        </div>
+        <div class="gallery-item gallery-item-4">
+          <img src="/imgs/Rectangle 13.png" alt="Gallery image 4">
+        </div>
+        <div class="gallery-item gallery-item-5">
+          <img src="/imgs/Rectangle 14.png" alt="Gallery image 5">
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+
+<section id="testimonials" class="testimonials-section">
+  <div class="container">
+    <!-- Testimonials Header -->
+    <div class="testimonials-header">
+      <h2><%= pageContents.testimonials_title || 'آراء العملاء عن <br>تجربتهم معنا' %></h2>
+      <p><%= pageContents.testimonials_description || 'استمع إلى قصص معتمرينا وحجاجنا الكرام، وتعرّف كيف ساعدتهم خدماتنا المتميزة في عيش تجربة روحية مريحة ومتكاملة، من التخطيط وحتى أداء المناسك بكل طمأنينة.' %></p>
+    </div>
+    
+    <!-- Testimonials Carousel -->
+    <div class="testimonials-carousel-wrapper">
+      <% if (testimonialsReviews && testimonialsReviews.length > 0) { %>
+        <div class="testimonials-carousel" id="testimonials-carousel">
+          <div class="testimonials-track" id="testimonials-track">
+            <% testimonialsReviews.forEach(function(review, index) { %>
+              <div class="testimonial-slide">
+                <div class="testimonial-card">
+                  <div class="testimonial-card-bg"></div>
+                  <div class="testimonial-content">
+                    <div class="testimonial-user">
+                      <h4><%= review.name %></h4>
+                      <div class="testimonial-stars">
+                        <% for(let i = 1; i <= 5; i++) { %>
+                          <% if(i <= review.rating) { %>
+                            <img src="/imgs/star.png" alt="star">
+                          <% } else { %>
+                            <img src="/imgs/star.png" alt="star" style="opacity: 0.3;">
+                          <% } %>
+                        <% } %>
+                      </div>
+                    </div>
+                    <p>"<%= review.text %>"</p>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+        
+        <!-- Carousel Navigation -->
+        <div class="testimonials-navigation">
+          <button class="carousel-btn prev-btn" id="prev-testimonial" aria-label="Previous testimonial">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15,18 9,12 15,6"></polyline>
+            </svg>
+          </button>
+          
+          <div class="carousel-dots" id="testimonials-dots">
+            <% for(let i = 0; i < testimonialsReviews.length; i++) { %>
+              <button class="dot <%= i === 0 ? 'active' : '' %>" data-slide="<%= i %>"></button>
+            <% } %>
+          </div>
+          
+          <button class="carousel-btn next-btn" id="next-testimonial" aria-label="Next testimonial">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9,18 15,12 9,6"></polyline>
+            </svg>
+          </button>
+        </div>
+      <% } else { %>
+        <!-- Fallback testimonial when no reviews exist -->
+        <div class="testimonials-carousel">
+          <div class="testimonials-track">
+            <div class="testimonial-slide">
+              <div class="testimonial-card">
+                <div class="testimonial-card-bg"></div>
+                <div class="testimonial-content">
+                  <div class="testimonial-user">
+                    <h4><%= pageContents.testimonial_user_name || 'مصطفى حامد' %></h4>
+                    <div class="testimonial-stars">
+                      <img src="/imgs/star.png" alt="star">
+                      <img src="/imgs/star.png" alt="star">
+                      <img src="/imgs/star.png" alt="star">
+                      <img src="/imgs/star.png" alt="star">
+                      <img src="/imgs/star.png" alt="star">
+                    </div>
+                  </div>
+                  <p>"<%= pageContents.testimonial_text || 'أكثر ما أعجبني هو اهتمامهم بأدق التفاصيل، حتى الاستقبال في المطار كان بابتسامة. شعرت أنني مع عائلتي طوال الرحلة.' %>"</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section id="about" class="about-section">
+  <div class="container about-container">
+    <div class="about-text">
+      <h2><%= pageContents.about_title || 'من نحن ؟' %></h2>
+      <p><%= pageContents.about_description || 'منصة متخصصة في تقديم باقات العمرة الشاملة، تغطي جميع تفاصيل الرحلة — من ترتيبات السفر وحتى الإقامة في أفخم فنادق مكة المكرمة والمدينة المنورة — لضمان راحة ورضا كل معتمر. مهمتنا تتجاوز الباقات التقليدية، فنحن نصنع تجارب روحانية شخصية تبقى خالدة في الذاكرة، وبأسعار تناسب الجميع. وبالاعتماد على أحدث الحلول الرقمية، نجعل رحلتك أكثر سلاسة وراحة واتصالًا، منذ لحظة الحجز وحتى العودة. "رحلتعمرة" – دعنا نأخذك هناك، ونحوّل كل خطوة إلى ذكرى مضيئة ترافقك مدى الحياة.' %></p>
+      <a href="#" class="btn-read-more"><%= pageContents.about_button_text || 'اقرأ المزيد' %></a>
+    </div>
+    <!--merged image-->
+    <div class="about-image-wrapper">
+      <img src="<%= (typeof aboutImageUrl !== 'undefined' && aboutImageUrl) ? aboutImageUrl : '/imgs/Image_1.png' %>" alt="Airplane in the sky" class="about-main-image">
+    </div>
+  </div>
+</section>
+<%-include("footer")%>
+
+<%- include('bottom_app_navbar') %>
+
+<script src="/js/card-interactions.js"></script>
+<script>
+  // Define user variable for card-interactions.js
+  const user = <%- JSON.stringify(user) %>
+  
+  // Simple testimonials carousel with dots
+  (function(){
+    var track = document.getElementById('testimonials-track');
+    if (!track) return;
+    
+    var slides = track.querySelectorAll('.testimonial-slide');
+    var total = slides.length;
+    if (total <= 1) return; // No need for carousel with single slide
+    
+    var index = 0;
+    var dots = document.querySelectorAll('#testimonials-dots .dot');
+    var prevBtn = document.getElementById('prev-testimonial');
+    var nextBtn = document.getElementById('next-testimonial');
+    
+    function updateCarousel(){
+      // Move track
+      track.style.transform = 'translateX(' + (-index * 100) + '%)';
+      
+      // Update dots
+      dots.forEach(function(dot, i) {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+    
+    function goToSlide(slideIndex) {
+      index = slideIndex;
+      updateCarousel();
+    }
+    
+    function nextSlide() {
+      index = (index + 1) % total;
+      updateCarousel();
+    }
+    
+    function prevSlide() {
+      index = (index - 1 + total) % total;
+      updateCarousel();
+    }
+    
+    // Event listeners
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    
+    // Dot navigation
+    dots.forEach(function(dot, i) {
+      dot.addEventListener('click', function() {
+        goToSlide(i);
+      });
+    });
+    
+    // Auto-advance every 5 seconds
+    setInterval(nextSlide, 5000);
+    
+    // Touch/swipe support for mobile
+    var startX = 0;
+    var currentX = 0;
+    var isDragging = false;
+    
+    track.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+    });
+    
+    track.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX;
+      var diffX = startX - currentX;
+      
+      // Add some resistance
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+        isDragging = false;
+      }
+    });
+    
+    track.addEventListener('touchend', function() {
+      isDragging = false;
+    });
+    
+    // Initialize
+    updateCarousel();
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/home.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>شريك سياحي - منصة رحلة عمرة</title>
+</head>
+<body>
+        <%- include('navbar') %>
+
+    <section class="partner-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">✨ انضم إلى منصة رحلة عمرة كشريك سياحي
+</h1>
+                <p class="hero-subtitle">
+                    هل تدير شركة سياحة وتبحث عن طريقة فعالة لعرض رحلات العمرة والسياحة؟<br>
+                    منصة رحلة عمرة تمنحك وصولًا مباشرًا إلى آلاف الزوار الباحثين عن رحلتهم المثالية، داخل مصر وخارجها.
+                </p>
+                <a href="#contact" class="cta-button">اكتشف الباقات</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="benefits-section">
+        <div class="container">
+            <h2 class="section-title">🎯 لماذا تنضم إلينا؟</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">👥</div>
+                    <h3>جمهور مستهدف</h3>
+                    <p>عرض رحلاتك أمام جمهور مستهدف مهتم بالسفر الديني والسياحي</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">💻</div>
+                    <h3>لوحة تحكم سهلة</h3>
+                    <p>لوحة تحكم سهلة لرفع العروض وتتبع الحجوزات</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🛠️</div>
+                    <h3>دعم مخصص</h3>
+                    <p>دعم فني وتسويقي مخصص لشركائنا</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">📈</div>
+                    <h3>فرص الشراكة</h3>
+                    <p>فرص شراكة في الحملات الإعلانية والمواسم (رمضان، الحج، الصيف)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+       <section class="packages-section" id="packages">
+        <div class="container">
+            <h2 class="section-title">💼 الباقات المتاحة</h2>
+            <div class="packages-grid">
+                <div class="package-card basic">
+                    <div class="package-header">
+                        <h3>أساسية</h3>
+            
+                    </div>
+                    <ul class="package-features">
+                        <li>✅ عرض <%= tierLimits.basic %> رحلات</li>
+                        <li>✅ صفحة تعريف بالشركة</li>
+                        <li>✅ دعم فني</li>
+                        <li>✅ تقارير أساسية</li>
+                    </ul>
+                    <button class="package-btn" onclick="selectPackage('basic')">اختر هذه الباقة</button>
+                </div>
+
+                <div class="package-card professional recommended">
+                    <div class="recommendation-badge">الأكثر شعبية</div>
+                    <div class="package-header">
+                        <h3>احترافية</h3>
+               
+                    </div>
+                    <ul class="package-features">
+                        <li>✅ عرض <%= tierLimits.professional %> رحلة</li>
+                        <li>✅ تقارير أداء تفصيلية</li>
+                        <li>✅ شعار مميز</li>
+                        <li>✅ دعم مباشر</li>
+                        <li>✅ أولوية في الظهور</li>
+                    </ul>
+                    <button class="package-btn" onclick="selectPackage('professional')">اختر هذه الباقة</button>
+                </div>
+
+                <div class="package-card premium">
+                    <div class="package-header">
+                        <h3>مميزة</h3>
+                
+                    </div>
+                    <ul class="package-features">
+                        <li>✅ <%= tierLimits.premium === -1 ? 'عدد غير محدود من الرحلات' : 'عرض ' + tierLimits.premium + ' رحلة' %></li>
+                        <li>✅ ظهور في الصفحة الرئيسية</li>
+                        <li>✅ حملات ترويجية مشتركة</li>
+                        <li>✅ دعم مخصص 24/7</li>
+                        <li>✅ تحليلات متقدمة</li>
+                        <li>✅ API للتكامل</li>
+                    </ul>
+                    <button class="package-btn" onclick="selectPackage('premium')">اختر هذه الباقة</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>ابدأ رحلتك معنا اليوم</h2>
+            <p>انضم إلى مئات الشركات التي تثق بمنصة رحلة عمرة</p>
+            <a href="#" class="cta-button" onclick="selectPackage('professional')">انضم الآن</a>
+        </div>
+    </section>
+</div>
+    <%- include('bottom_app_navbar') %>
+
+    
+    <style>
+        /* Override container width for partner page */
+        .container {
+            max-width: 100% !important;
+            padding: 0 !important;
+        }
+        
+        .partner-hero {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 50%, #5c8397 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .partner-hero .container {
+            padding: 0 20px !important;
+        }
+
+        .benefits-section .container,
+        .packages-section .container,
+        .cta-section .container {
+            padding: 0 20px !important;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            font-family: var(--font-tajawal), sans-serif;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #1E5470;
+            padding: 15px 40px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .benefits-section, .packages-section {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #1E5470;
+            margin-bottom: 50px;
+            font-weight: 700;
+            font-family: var(--font-tajawal), sans-serif;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .benefit-card h3 {
+            color: #1E5470;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .benefit-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 70px;
+        }
+
+        .package-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .package-card.recommended {
+            border-color: #34729C;
+            transform: scale(1.05);
+        }
+
+        .recommendation-badge {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #34729C;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .package-header {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 50px;
+        }
+
+        .package-header h3 {
+            color: #1E5470;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .package-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #34729C;
+        }
+
+        .currency {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .package-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .package-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            color: #475569;
+        }
+
+        .package-features li:last-child {
+            border-bottom: none;
+        }
+
+        .package-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .package-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 114, 156, 0.3);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .partner-hero .container,
+            .benefits-section .container,
+            .packages-section .container,
+            .cta-section .container {
+                padding: 0 15px !important;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .benefits-grid, .packages-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .package-card.recommended {
+                transform: none;
+            }
+
+            .packages-section {
+                padding: 60px 0;
+            }
+
+            .partner-hero {
+                padding: 60px 0;
+            }
+        }
+        
+    </style>
+
+    <script>
+        function selectPackage(packageType) {
+            // Redirect to signup with selected package
+            window.location.href = `/partner-signup?package=${packageType}`;
+        }
+    </script>
+        <%- include('footer') %>
+
+</body>
+</html>

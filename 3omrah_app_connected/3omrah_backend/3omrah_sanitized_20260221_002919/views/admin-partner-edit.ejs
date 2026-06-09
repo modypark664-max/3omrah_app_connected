@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل الشريك - <%= partner.companyName || partner.username %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1E5470;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(30, 84, 112, 0.3);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(30, 84, 112, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .section-icon {
+            font-size: 1.8rem;
+            color: #34729C;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1E5470;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1E5470;
+            font-size: 0.95rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #34729C;
+            box-shadow: 0 0 0 3px rgba(52, 114, 156, 0.1);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .array-container {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8fafc;
+        }
+        
+        .array-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        
+        .array-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .array-input {
+            flex: 1;
+        }
+        
+        .remove-array-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-array-btn:hover {
+            background: #dc2626;
+        }
+        
+        .add-array-btn {
+            background: #34729C;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .add-array-btn:hover {
+            background: #1E5470;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #34729C;
+            background: #f0f9ff;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #34729C;
+            background: #e0f2fe;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-text {
+            color: #64748b;
+            margin-top: 10px;
+        }
+        
+        .current-files {
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            background: #e0f2fe;
+            border: 1px solid #0891b2;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            color: #0891b2;
+        }
+        
+        .file-link {
+            background: #0891b2;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-link:hover {
+            background: #0e7490;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f1f5f9;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: inline-block;
+            min-width: 150px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 114, 156, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 114, 156, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+        
+        .info-box {
+            background: #e0f2fe;
+            border: 1px solid #0891b2;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box-title {
+            font-weight: 600;
+            color: #0891b2;
+            margin-bottom: 8px;
+        }
+        
+        .info-box-text {
+            color: #164e63;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .status-verified {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .status-suspended {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #34729C;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>تعديل بيانات الشريك</h1>
+            <a href="/admin/partner/details/<%= partner._id %>" class="back-button">
+                ← العودة لتفاصيل الشريك
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="info-box">
+            <div class="info-box-title">معلومات الشريك الحالية</div>
+            <div class="info-box-text">
+                يمكنك تعديل بيانات الشريك من خلال النموذج أدناه. سيتم حفظ جميع التغييرات فوراً عند النقر على زر "حفظ التغييرات".
+            </div>
+        </div>
+
+        <div class="status-indicator <%= partner.isVerified ? 'status-verified' : 'status-suspended' %>">
+            <span>حالة الشريك:</span>
+            <span><%= partner.isVerified ? 'مُفعل ✓' : 'معلق ⏸' %></span>
+        </div>
+
+        <form id="editPartnerForm" method="POST" enctype="multipart/form-data">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">👤</span>
+                    <h3 class="section-title">المعلومات الأساسية</h3>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username">اسم المستخدم *</label>
+                        <input type="text" id="username" name="username" value="<%= partner.username %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="companyName">اسم الشركة *</label>
+                        <input type="text" id="companyName" name="companyName" value="<%= partner.companyName || '' %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="companyCode">كود الشركة</label>
+                        <input type="text" id="companyCode" name="companyCode" value="<%= partner.companyCode || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="companyRepresentative">الممثل القانوني</label>
+                        <input type="text" id="companyRepresentative" name="companyRepresentative" value="<%= partner.companyRepresentative || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="partnerPackage">نوع الباقة</label>
+                        <select id="partnerPackage" name="partnerPackage">
+                            <option value="">اختر نوع الباقة</option>
+                            <option value="basic" <%= partner.partnerPackage === 'basic' ? 'selected' : '' %>>أساسية</option>
+                            <option value="professional" <%= partner.partnerPackage === 'professional' ? 'selected' : '' %>>احترافية</option>
+                            <option value="premium" <%= partner.partnerPackage === 'premium' ? 'selected' : '' %>>متميزة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="branches">عدد الفروع</label>
+                        <input type="number" id="branches" name="branches" value="<%= partner.branches || '' %>" min="1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">📞</span>
+                    <h3 class="section-title">معلومات الاتصال</h3>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="address1">العنوان الأول</label>
+                        <textarea id="address1" name="address1" placeholder="العنوان الرئيسي للشركة"><%= partner.address1 || '' %></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address2">العنوان الثاني (اختياري)</label>
+                        <textarea id="address2" name="address2" placeholder="عنوان إضافي أو فرع آخر"><%= partner.address2 || '' %></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>أرقام الهواتف</label>
+                    <div class="array-container" id="phoneNumbersContainer">
+                        <% if (partner.phoneNumbers && Array.isArray(partner.phoneNumbers) && partner.phoneNumbers.length > 0) { %>
+                            <% partner.phoneNumbers.forEach((phone, index) => { %>
+                                <div class="array-item">
+                                    <input type="text" name="phoneNumbers" class="array-input" value="<%= phone %>" placeholder="رقم الهاتف">
+                                    <button type="button" class="remove-array-btn" onclick="removeArrayItem(this)">حذف</button>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="array-item">
+                                <input type="text" name="phoneNumbers" class="array-input" value="" placeholder="رقم الهاتف">
+                                <button type="button" class="remove-array-btn" onclick="removeArrayItem(this)">حذف</button>
+                            </div>
+                        <% } %>
+                    </div>
+                    <button type="button" class="add-array-btn" onclick="addPhoneNumber()">إضافة رقم هاتف</button>
+                </div>
+            </div>
+
+            <!-- Company Documents -->
+            <div class="form-section">
+                <div class="section-header">
+                    <span class="section-icon">📄</span>
+                    <h3 class="section-title">مستندات الشركة</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label>المستندات الحالية</label>
+                    <% if (partner.companyDocs && Array.isArray(partner.companyDocs) && partner.companyDocs.length > 0) { %>
+                        <div class="current-files">
+                            <% partner.companyDocs.forEach((doc, index) => { %>
+                                <div class="file-item">
+                                    <span class="file-name">مستند <%= index + 1 %></span>
+                                    <a href="<%= doc %>" target="_blank" class="file-link">عرض</a>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p style="color: #64748b; font-style: italic;">لا توجد مستندات مرفوعة</p>
+                    <% } %>
+                </div>
+                
+                <div class="form-group">
+                    <label for="companyDocs">إضافة مستندات جديدة</label>
+                    <div class="file-upload-area" onclick="document.getElementById('companyDocs').click()">
+                        <div style="font-size: 2rem; color: #64748b;">📁</div>
+                        <div class="upload-text">اختر الملفات أو اسحبها هنا</div>
+                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 5px;">
+                            يمكن رفع ملفات PDF, DOC, DOCX, JPG, PNG (حتى 10 ملفات)
+                        </div>
+                    </div>
+                    <input type="file" id="companyDocs" name="companyDocs" class="file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span class="button-text">حفظ التغييرات</span>
+                </button>
+                <a href="/admin/partner/details/<%= partner._id %>" class="btn btn-secondary">إلغاء</a>
+            </div>
+        </form>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <div>جاري حفظ التغييرات...</div>
+        </div>
+    </div>
+
+    <script>
+        // Phone numbers management
+        function addPhoneNumber() {
+            const container = document.getElementById('phoneNumbersContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'array-item';
+            newItem.innerHTML = `
+                <input type="text" name="phoneNumbers" class="array-input" placeholder="رقم الهاتف">
+                <button type="button" class="remove-array-btn" onclick="removeArrayItem(this)">حذف</button>
+            `;
+            container.appendChild(newItem);
+        }
+
+        function removeArrayItem(button) {
+            const container = button.closest('.array-container');
+            const items = container.querySelectorAll('.array-item');
+            
+            // Don't allow removing the last item
+            if (items.length > 1) {
+                button.closest('.array-item').remove();
+            } else {
+                // Just clear the input instead of removing
+                const input = button.closest('.array-item').querySelector('input');
+                input.value = '';
+            }
+        }
+
+        // File upload handling
+        const fileUploadArea = document.querySelector('.file-upload-area');
+        const fileInput = document.getElementById('companyDocs');
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileDisplay(files);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            updateFileDisplay(e.target.files);
+        });
+
+        function updateFileDisplay(files) {
+            const uploadText = document.querySelector('.upload-text');
+            if (files.length > 0) {
+                uploadText.textContent = `تم اختيار ${files.length} ملف`;
+            } else {
+                uploadText.textContent = 'اختر الملفات أو اسحبها هنا';
+            }
+        }
+
+        // Form submission
+        document.getElementById('editPartnerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            loadingIndicator.style.display = 'block';
+            submitButton.disabled = true;
+            submitButton.querySelector('.button-text').textContent = 'جاري الحفظ...';
+            
+            try {
+                const response = await fetch(form.action || window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم حفظ التغييرات بنجاح');
+                    // Redirect to partner details page
+                    window.location.href = `/admin/partner/details/<%= partner._id %>`;
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء حفظ التغييرات');
+            } finally {
+                // Hide loading state
+                loadingIndicator.style.display = 'none';
+                submitButton.disabled = false;
+                submitButton.querySelector('.button-text').textContent = 'حفظ التغييرات';
+            }
+        });
+
+        // Form validation
+        function validateForm() {
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e1e8ed';
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Real-time validation
+        document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
+            field.addEventListener('blur', () => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
+                } else {
+                    field.style.borderColor = '#34729C';
+                }
+            });
+            
+            field.addEventListener('input', () => {
+                if (field.value.trim()) {
+                    field.style.borderColor = '#34729C';
+                }
+            });
+        });
+
+        // Clean up phone numbers before submission
+        document.getElementById('editPartnerForm').addEventListener('submit', (e) => {
+            // Remove empty phone number inputs
+            const phoneInputs = document.querySelectorAll('input[name="phoneNumbers"]');
+            phoneInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

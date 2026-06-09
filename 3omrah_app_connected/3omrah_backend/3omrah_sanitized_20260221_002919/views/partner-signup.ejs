@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>تسجيل شريك سياحي - منصة رحلة عمرة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .signup-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            color: #1E5470;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            color: #34729C;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1E5470;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .package-info {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            border: 2px solid #34729C;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .package-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1E5470;
+            margin-bottom: 10px;
+        }
+
+        .package-price {
+            font-size: 1.1rem;
+            color: #34729C;
+            margin-bottom: 10px;
+        }
+
+        .change-package {
+            background: none;
+            border: 1px solid #34729C;
+            color: #34729C;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .change-package:hover {
+            background: #34729C;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1E5470;
+            font-size: 1rem;
+        }
+        
+        input[type="text"], input[type="tel"], input[type="password"], select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            direction: ltr;
+            text-align: right;
+        }
+        
+        input[type="text"], select {
+            direction: rtl;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #34729C;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 114, 156, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        input::placeholder {
+            color: #9ca3af;
+            text-align: right;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            padding: 10px;
+        }
+        
+        .btn-signup {
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 114, 156, 0.3);
+        }
+        
+        .btn-signup:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 114, 156, 0.4);
+        }
+        
+        .btn-signup:active {
+            transform: translateY(-1px);
+        }
+        
+        .link-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e8ed;
+        }
+        
+        .link-section a {
+            color: #34729C;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .link-section a:hover {
+            color: #1E5470;
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #059669;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 56px;
+            color: #9ca3af;
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+        
+        .form-group.has-icon input {
+            padding-left: 50px;
+        }
+        
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .decorative-element {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #34729C, #1E5470);
+            opacity: 0.1;
+        }
+        
+        .decorative-element:first-child {
+            top: -50px;
+            right: -50px;
+        }
+        
+        .decorative-element:last-child {
+            bottom: -50px;
+            left: -50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="decorative-element"></div>
+    <div class="decorative-element"></div>
+    
+    <div class="signup-container">
+        <div class="logo-section">
+            <div class="logo">🕋</div>
+            <div class="subtitle">منصة العمرة والسياحة - شريك سياحي</div>
+        </div>
+
+        <div class="package-info">
+            <div class="package-name" id="packageName">باقة احترافية</div>
+            <!-- <div class="package-price" id="packagePrice">399 جنيه/شهر</div> -->
+            <button type="button" class="change-package" onclick="changePackage()">تغيير الباقة</button>
+        </div>
+        
+        <h1>تسجيل شريك سياحي</h1>
+        
+        <% if (typeof error_msg !== 'undefined' && error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-error"><%= error_msg %></div>
+        <% } %>
+        
+        <% if (typeof success_msg !== 'undefined' && success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success"><%= success_msg %></div>
+        <% } %>
+        
+        <form action="/partner-signup" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="partnerPackage" id="partnerPackage" value="<%= selectedPackage || 'professional' %>">
+
+            <div class="form-group has-icon">
+                <label for="companyCode">كود الشركة المسجل فى وزارة السياحة:</label>
+                <input type="text" name="companyCode" id="companyCode" required placeholder="أدخل كود الشركة" value="TUR-2024-001">
+                <span class="input-icon">🏷️</span>
+                <div class="help-text">الكود الرسمي المسجل في وزارة السياحة</div>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="branches">فروع الشركة:</label>
+                <input type="text" name="branches" id="branches" required placeholder="أدخل فروع الشركة (افصل بين الفروع بفاصلة)" value="فرع القاهرة, فرع الاسكندرية">
+                <span class="input-icon">🏬</span>
+                <div class="help-text">مثال: فرع القاهرة, فرع الاسكندرية</div>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="address1">عنوان الشركة الأول:</label>
+                <input type="text" name="address1" id="address1" required placeholder="أدخل عنوان الشركة الأول" value="123 شارع الهرم، الجيزة، مصر">
+                <span class="input-icon">📍</span>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="address2">عنوان الشركة الثاني (إن وجد):</label>
+                <input type="text" name="address2" id="address2" placeholder="أدخل عنوان الشركة الثاني" value="456 شارع النيل، المعادي، القاهرة">
+                <span class="input-icon">📍</span>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="phoneNumbers">أرقام التليفونات:</label>
+                <input type="text" name="phoneNumbers" id="phoneNumbers" required placeholder="أدخل أرقام التليفونات (افصل بين الأرقام بفاصلة)" value="01012345678, 01234567890">
+                <span class="input-icon">☎️</span>
+                <div class="help-text">مثال: 01012345678, 01234567890</div>
+            </div>
+
+            <div class="form-group">
+                <label for="companyDocs">رفع أوراق الشركة:</label>
+                <input type="file" name="companyDocs" id="companyDocs" multiple required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                <div class="help-text">ارفع صورة أو ملف PDF/Word من أوراق الشركة (مطلوب)</div>
+            </div>
+            
+            <div class="form-group has-icon">
+                <label for="companyName">اسم الشركة:</label>
+                <input type="text" name="companyName" id="companyName" required placeholder="أدخل اسم الشركة" value="شركة النجوم للسياحة والسفر">
+                <span class="input-icon">🏢</span>
+                <div class="help-text">اسم الشركة السياحية الرسمي</div>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="companyRepresentative">ممثل الشركة:</label>
+                <input type="text" name="companyRepresentative" id="companyRepresentative" required placeholder="أدخل اسم ممثل الشركة" value="أحمد محمد علي">
+                <span class="input-icon">👤</span>
+                <div class="help-text">اسم الشخص المسؤول عن التواصل</div>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="phoneNumber">رقم الهاتف:</label>
+                <input type="tel" name="phoneNumber" id="phoneNumber" required placeholder="رقم الهاتف" dir="ltr" value="01012345678">
+                <span class="input-icon">📱</span>
+                <div class="help-text">رقم هاتف للتواصل والتحقق</div>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" name="password" id="password" required placeholder="••••••••" minlength="8" value="12345678">
+                <span class="input-icon">🔒</span>
+                <div class="help-text">يجب أن تكون على الأقل 8 أحرف</div>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="confirmPassword">تأكيد كلمة المرور:</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" required placeholder="••••••••" minlength="8" value="12345678">
+                <span class="input-icon">🔓</span>
+                <div class="help-text">أدخل كلمة المرور مرة أخرى للتأكيد</div>
+            </div>
+
+            <button type="submit" class="btn-signup">إنشاء حساب الشريك</button>
+        </form>
+        
+        <div class="link-section">
+            <a href="/login">لديك حساب؟ سجل الدخول</a> | 
+            <a href="/partner">العودة لصفحة الشراكة</a>
+        </div>
+    </div>
+
+    <script>
+        // Get package from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedPackage = urlParams.get('package') || 'professional';
+        
+        // Package information
+        const packages = {
+            basic: { name: 'باقة أساسية', price: '199 جنيه/شهر' },
+            professional: { name: 'باقة احترافية', price: '399 جنيه/شهر' },
+            premium: { name: 'باقة مميزة', price: '799 جنيه/شهر' }
+        };
+
+        // Set initial package
+        document.getElementById('packageName').textContent = packages[selectedPackage].name;
+        document.getElementById('packagePrice').textContent = packages[selectedPackage].price;
+        document.getElementById('partnerPackage').value = selectedPackage;
+
+        function changePackage() {
+            window.location.href = '/partner#packages';
+        }
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password confirmation validation
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            
+            function validatePasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword.length === 0) {
+                    confirmPasswordInput.setCustomValidity('');
+                    confirmPasswordInput.style.borderColor = '#e1e8ed';
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    confirmPasswordInput.setCustomValidity('كلمات المرور غير متطابقة');
+                    confirmPasswordInput.style.borderColor = '#ef4444';
+                } else {
+                    confirmPasswordInput.setCustomValidity('');
+                    confirmPasswordInput.style.borderColor = '#10b981';
+                }
+            }
+            
+            confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+            passwordInput.addEventListener('input', validatePasswordMatch);
+        
+            // Enhanced phone number formatting
+            const phoneInput = document.getElementById('phoneNumber');
+            
+            phoneInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                
+                // Remove country code if present
+                if (value.startsWith('966')) {
+                    value = value.substring(3);
+                }
+                
+                // Limit to reasonable phone number length
+                if (value.length > 10) {
+                    value = value.substring(0, 10);
+                }
+                
+                this.value = value;
+                
+                // Validate phone number format (allow various formats)
+                if (value.length >= 9 && value.length <= 10) {
+                    this.style.borderColor = '#10b981';
+                } else if (value.length > 0) {
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    this.style.borderColor = '#e1e8ed';
+                }
+            });
+            
+            // Form submission validation
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    e.preventDefault();
+                    alert('كلمات المرور غير متطابقة.');
+                    confirmPasswordInput.focus();
+                    return false;
+                }
+                
+                if (passwordInput.value.length < 8) {
+                    e.preventDefault();
+                    alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+                    passwordInput.focus();
+                    return false;
+                }
+                
+                const phonePattern = /^[0-9]{9,10}$/;
+                if (!phonePattern.test(phoneInput.value)) {
+                    e.preventDefault();
+                    alert('يرجى إدخال رقم هاتف صحيح (9-10 أرقام).');
+                    phoneInput.focus();
+                    return false;
+                }
+
+                // Validate company name
+                const companyName = document.getElementById('companyName').value.trim();
+                if (companyName.length < 3) {
+                    e.preventDefault();
+                    alert('يرجى إدخال اسم شركة صحيح (3 أحرف على الأقل).');
+                    document.getElementById('companyName').focus();
+                    return false;
+                }
+
+                // Validate representative name
+                const representative = document.getElementById('companyRepresentative').value.trim();
+                if (representative.length < 3) {
+                    e.preventDefault();
+                    alert('يرجى إدخال اسم ممثل الشركة (3 أحرف على الأقل).');
+                    document.getElementById('companyRepresentative').focus();
+                    return false;
+                }
+
+                // Validate file upload
+                const fileInput = document.getElementById('companyDocs');
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    e.preventDefault();
+                    alert('يرجى رفع أوراق الشركة.');
+                    fileInput.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
+
+    <%- include('bottom_app_navbar') %>
+</body>
+</html>

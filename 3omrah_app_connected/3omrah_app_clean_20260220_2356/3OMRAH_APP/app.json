@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "Rehlatty",
+    "slug": "rehlatty",
+  "version": "1.0.4",
+    "orientation": "default",
+    "scheme": "rehlatty",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/app-icon.png",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./assets/app-icon.png",
+      "bundleIdentifier": "com.adev.rehlatty"
+    },
+    "android": {
+      "package": "com.adev.rehlatty",
+      "icon": "./assets/app-icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/app-icon.png",
+        "backgroundColor": "#031727"
+      },
+  "versionCode": 4,
+      "permissions": [
+        "INTERNET",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "privacyPolicyUrl": "http://localhost:3000/privacy",
+      "eas": {
+    "projectId": "NEW-GENERATED-ID"
+      }
+    },
+    "plugins": [
+      "expo-font",
+      "expo-system-ui",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.1.20"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app-icon.png",
+          "color": "#D4AF37",
+          "sounds": []
+        }
+      ]
+    ],
+    "owner": "YourExpoOwnerName"
+  }
+}

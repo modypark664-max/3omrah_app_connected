@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>تعديل بطاقة الرحلة</title>
+    <style>
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .form-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .form-content {
+            padding: 40px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1E5470;
+            font-size: 0.95rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #34729C;
+            box-shadow: 0 0 0 3px rgba(52, 114, 156, 0.1);
+        }
+        
+        .btn-update-card {
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-update-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 114, 156, 0.4);
+        }
+        
+        .section-title {
+            color: #1E5470;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #34729C;
+        }
+        
+        .hotel-item, .housing-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .hotel-grid, .housing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .add-btn {
+            background: #34729C;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background: #1E5470;
+            transform: translateY(-1px);
+        }
+        
+        .remove-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .remove-btn:hover {
+            background: #dc2626;
+        }
+        
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background: #4b5563;
+        }
+        
+        .array-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .array-input {
+            flex: 1;
+            margin: 0;
+        }
+        
+        .array-textarea {
+            flex: 1;
+            margin: 0;
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .array-item .remove-btn {
+            margin: 0;
+            align-self: flex-start;
+            margin-top: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hotel-grid, .housing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="header">
+            <h1>تعديل بطاقة الرحلة</h1>
+            <p>كود الرحلة: <%= card.code %></p>
+        </div>
+        
+        <div class="form-content">
+            <a href="/admin/dashboard" class="back-btn">← العودة للوحة التحكم</a>
+            
+            <form action="/admin/edit-card/<%= card._id %>" method="POST" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>نوع الرحلة:</label>
+                        <select name="type" id="type" required>
+                            <option value="">اختر النوع</option>
+                            <option value="omrah" <%= card.type === 'omrah' ? 'selected' : '' %>>عمرة</option>
+                            <option value="internal_tour" <%= card.type === 'internal_tour' ? 'selected' : '' %>>رحلة داخلية</option>
+                            <option value="external_tour" <%= card.type === 'external_tour' ? 'selected' : '' %>>رحلة خارجية</option>
+                            <option value="7ag" <%= card.type === '7ag' ? 'selected' : '' %>>رحلة حج</option>
+                            <option value="ramadan" <%= card.type === 'ramadan' ? 'selected' : '' %>>رحلة رمضان</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>كود الرحلة:</label>
+                        <input type="text" name="code" value="<%= card.code %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>نوع العرض:</label>
+                        <select name="offer_type" id="offer_type">
+                            <option value="">اختر نوع العرض</option>
+                            <!-- Options will be populated by JavaScript based on trip type -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>عدد الأيام:</label>
+                        <input type="number" name="days" min="1" value="<%= card.days %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>عدد الليالي:</label>
+                        <input type="number" name="nights" min="0" value="<%= card.nights %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>تاريخ السفر:</label>
+                        <input type="date" name="travel_date" value="<%= card.travel_date.toISOString().split('T')[0] %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>تاريخ انتهاء العرض:</label>
+                        <input type="date" name="offer_expiry_date" value="<%= card.offer_expiry_date ? card.offer_expiry_date.toISOString().split('T')[0] : '' %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>مسار الذهاب:</label>
+                        <input type="text" name="going_route" value="<%= card.going_route %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>مسار العودة:</label>
+                        <input type="text" name="returning_route" value="<%= card.returning_route %>" required>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>شركة الطيران:</label>
+                        <input type="text" name="plane_company" value="<%= card.plane_company %>" required>
+                    </div>
+                </div>
+                
+                <div class="section-title">الصور</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>الصورة الرئيسية (اترك فارغاً للاحتفاظ بالصورة الحالية):</label>
+                        <input type="file" name="thumbnail" accept="image/*">
+                        <small>الصورة الحالية: <%= card.thumbnail %></small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>صور إضافية (اترك فارغاً للاحتفاظ بالصور الحالية):</label>
+                        <input type="file" name="images" accept="image/*" multiple>
+                        <small>عدد الصور الحالية: <%= card.images.length %></small>
+                    </div>
+                </div>
+                
+                <div class="section-title">الخدمات المشمولة</div>
+                <div id="included-services-container">
+                    <% if (card.included_services && card.included_services.length > 0) { %>
+                        <% card.included_services.forEach((service, index) => { %>
+                            <div class="array-item">
+                                <input type="text" class="array-input" value="<%= service %>" placeholder="اكتب الخدمة هنا">
+                                <% if (index > 0) { %>
+                                    <button type="button" class="remove-btn" onclick="removeArrayItem(this)">حذف</button>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="array-item">
+                            <input type="text" class="array-input" placeholder="اكتب الخدمة هنا">
+                        </div>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" onclick="addArrayItem('included-services-container', 'اكتب الخدمة هنا')">إضافة خدمة</button>
+                
+                <div class="section-title">الخدمات غير المشمولة</div>
+                <div id="not-included-services-container">
+                    <% if (card.not_included_services && card.not_included_services.length > 0) { %>
+                        <% card.not_included_services.forEach((service, index) => { %>
+                            <div class="array-item">
+                                <input type="text" class="array-input" value="<%= service %>" placeholder="اكتب الخدمة هنا">
+                                <% if (index > 0) { %>
+                                    <button type="button" class="remove-btn" onclick="removeArrayItem(this)">حذف</button>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="array-item">
+                            <input type="text" class="array-input" placeholder="اكتب الخدمة هنا">
+                        </div>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" onclick="addArrayItem('not-included-services-container', 'اكتب الخدمة هنا')">إضافة خدمة</button>
+                
+                <div class="section-title">الملاحظات</div>
+                <div id="notes-container">
+                    <% if (card.notes && card.notes.length > 0) { %>
+                        <% card.notes.forEach((note, index) => { %>
+                            <div class="array-item">
+                                <textarea class="array-textarea" placeholder="اكتب الملاحظة هنا"><%= note %></textarea>
+                                <% if (index > 0) { %>
+                                    <button type="button" class="remove-btn" onclick="removeArrayItem(this)">حذف</button>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="array-item">
+                            <textarea class="array-textarea" placeholder="اكتب الملاحظة هنا"></textarea>
+                        </div>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" onclick="addArrayTextarea('notes-container', 'اكتب الملاحظة هنا')">إضافة ملاحظة</button>
+                
+                <div class="section-title">قواعد الإلغاء</div>
+                <div id="cancelling-rules-container">
+                    <% if (card.cancelling_rules && card.cancelling_rules.length > 0) { %>
+                        <% card.cancelling_rules.forEach((rule, index) => { %>
+                            <div class="array-item">
+                                <textarea class="array-textarea" placeholder="اكتب قاعدة الإلغاء هنا"><%= rule %></textarea>
+                                <% if (index > 0) { %>
+                                    <button type="button" class="remove-btn" onclick="removeArrayItem(this)">حذف</button>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="array-item">
+                            <textarea class="array-textarea" placeholder="اكتب قاعدة الإلغاء هنا"></textarea>
+                        </div>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" onclick="addArrayTextarea('cancelling-rules-container', 'اكتب قاعدة الإلغاء هنا')">إضافة قاعدة</button>
+                
+                <div class="section-title">معلومات الفنادق</div>
+                <div id="hotels-container">
+                    <% if (card.plane && card.plane.hotel) { %>
+                        <% card.plane.hotel.forEach((hotel, index) => { %>
+                            <div class="hotel-item">
+                                <div class="hotel-grid">
+                                    <div class="form-group">
+                                        <label>عدد الليالي:</label>
+                                        <input type="number" class="hotel-nights" min="1" value="<%= hotel.nights %>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>اسم الفندق:</label>
+                                        <input type="text" class="hotel-name" value="<%= hotel.hotel %>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>نوع الفندق:</label>
+                                        <select class="hotel-type" required>
+                                            <option value="">اختر النوع</option>
+                                            <option value="اقتصادي" <%= hotel.hotel_type === 'اقتصادي' ? 'selected' : '' %>>اقتصادي</option>
+                                            <option value="سياحي" <%= hotel.hotel_type === 'سياحي' ? 'selected' : '' %>>سياحي</option>
+                                            <option value="VIP" <%= hotel.hotel_type === 'VIP' ? 'selected' : '' %>>VIP</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>الموقع:</label>
+                                        <input type="text" class="hotel-location" value="<%= hotel.location %>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>يشمل الطعام:</label>
+                                        <select class="hotel-food" required>
+                                            <option value="">اختر</option>
+                                            <option value="true" <%= hotel.comes_with_food ? 'selected' : '' %>>نعم</option>
+                                            <option value="false" <%= !hotel.comes_with_food ? 'selected' : '' %>>لا</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <% if (index > 0) { %>
+                                    <button type="button" class="remove-btn" onclick="removeHotel(this)">حذف الفندق</button>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" onclick="addHotel()">إضافة فندق آخر</button>
+                
+                <div class="section-title">خيارات الغرف</div>
+                <div id="housing-container">
+                    <% if (card.plane && card.plane.housingOptions) { %>
+                        <% card.plane.housingOptions.forEach((option, index) => { %>
+                            <div class="housing-item">
+                                <div class="housing-grid">
+                                    <div class="form-group">
+                                        <label>نوع الغرفة:</label>
+                                        <input type="text" class="room-type" value="<%= option.roomType %>" required placeholder="مثل: فردي، مزدوج، ثلاثي">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>السعر:</label>
+                                        <input type="number" class="room-price" min="0" value="<%= option.price %>" required>
+                                    </div>
+                                </div>
+                                <% if (index > 0) { %>
+                                    <button type="button" class="remove-btn" onclick="removeHousing(this)">حذف الخيار</button>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" onclick="addHousing()">إضافة خيار غرفة آخر</button>
+                
+                <input type="hidden" name="plane" id="plane">
+                
+                <button type="submit" class="btn-update-card">تحديث البطاقة</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add hotel functionality
+        function addHotel() {
+            const container = document.getElementById('hotels-container');
+            const hotelItem = document.createElement('div');
+            hotelItem.className = 'hotel-item';
+            hotelItem.innerHTML = `
+                <div class="hotel-grid">
+                    <div class="form-group">
+                        <label>عدد الليالي:</label>
+                        <input type="number" class="hotel-nights" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم الفندق:</label>
+                        <input type="text" class="hotel-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>نوع الفندق:</label>
+                        <select class="hotel-type" required>
+                            <option value="">اختر النوع</option>
+                            <option value="اقتصادي">اقتصادي</option>
+                            <option value="سياحي">سياحي</option>
+                            <option value="VIP">VIP</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>الموقع:</label>
+                        <input type="text" class="hotel-location" required>
+                    </div>
+                    <div class="form-group">
+                        <label>يشمل الطعام:</label>
+                        <select class="hotel-food" required>
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="remove-btn" onclick="removeHotel(this)">حذف الفندق</button>
+            `;
+            container.appendChild(hotelItem);
+        }
+
+        // Remove hotel functionality
+        function removeHotel(button) {
+            button.parentElement.remove();
+        }
+
+        // Add housing functionality
+        function addHousing() {
+            const container = document.getElementById('housing-container');
+            const housingItem = document.createElement('div');
+            housingItem.className = 'housing-item';
+            housingItem.innerHTML = `
+                <div class="housing-grid">
+                    <div class="form-group">
+                        <label>نوع الغرفة:</label>
+                        <input type="text" class="room-type" required placeholder="مثل: فردي، مزدوج، ثلاثي">
+                    </div>
+                    <div class="form-group">
+                        <label>السعر:</label>
+                        <input type="number" class="room-price" min="0" required>
+                    </div>
+                </div>
+                <button type="button" class="remove-btn" onclick="removeHousing(this)">حذف الخيار</button>
+            `;
+            container.appendChild(housingItem);
+        }
+
+        // Remove housing functionality
+        function removeHousing(button) {
+            button.parentElement.remove();
+        }
+
+        // Add array item functionality
+        function addArrayItem(containerId, placeholder) {
+            const container = document.getElementById(containerId);
+            const arrayItem = document.createElement('div');
+            arrayItem.className = 'array-item';
+            arrayItem.innerHTML = `
+                <input type="text" class="array-input" placeholder="${placeholder}">
+                <button type="button" class="remove-btn" onclick="removeArrayItem(this)">حذف</button>
+            `;
+            container.appendChild(arrayItem);
+        }
+
+        // Add array textarea functionality
+        function addArrayTextarea(containerId, placeholder) {
+            const container = document.getElementById(containerId);
+            const arrayItem = document.createElement('div');
+            arrayItem.className = 'array-item';
+            arrayItem.innerHTML = `
+                <textarea class="array-textarea" placeholder="${placeholder}"></textarea>
+                <button type="button" class="remove-btn" onclick="removeArrayItem(this)">حذف</button>
+            `;
+            container.appendChild(arrayItem);
+        }
+
+        // Remove array item functionality
+        function removeArrayItem(button) {
+            const container = button.parentElement.parentElement;
+            const items = container.querySelectorAll('.array-item');
+            if (items.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert('يجب الاحتفاظ بعنصر واحد على الأقل');
+            }
+        }
+
+        // Collect array data
+        function collectArrayData(containerId) {
+            const container = document.getElementById(containerId);
+            const items = container.querySelectorAll('.array-input, .array-textarea');
+            const data = [];
+            
+            items.forEach(item => {
+                const value = item.value.trim();
+                if (value) {
+                    data.push(value);
+                }
+            });
+            
+            return data;
+        }
+
+        // Generate plane JSON from form data
+        function generatePlaneJSON() {
+            const hotels = [];
+            const housingOptions = [];
+
+            // Collect hotel data
+            document.querySelectorAll('.hotel-item').forEach(item => {
+                const nights = parseInt(item.querySelector('.hotel-nights').value);
+                const hotel = item.querySelector('.hotel-name').value;
+                const hotel_type = item.querySelector('.hotel-type').value;
+                const location = item.querySelector('.hotel-location').value;
+                const comes_with_food = item.querySelector('.hotel-food').value === 'true';
+
+                if (nights && hotel && hotel_type && location) {
+                    hotels.push({
+                        nights,
+                        hotel,
+                        hotel_type,
+                        location,
+                        comes_with_food
+                    });
+                }
+            });
+
+            // Collect housing data
+            document.querySelectorAll('.housing-item').forEach(item => {
+                const roomType = item.querySelector('.room-type').value;
+                const price = parseFloat(item.querySelector('.room-price').value);
+
+                if (roomType && price >= 0) {
+                    housingOptions.push({
+                        roomType,
+                        price
+                    });
+                }
+            });
+
+            return {
+                hotel: hotels,
+                housingOptions: housingOptions
+            };
+        }
+
+        // Handle form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            try {
+                // Generate plane JSON
+                const planeData = generatePlaneJSON();
+                document.getElementById('plane').value = JSON.stringify(planeData);
+
+                // Collect array data and create hidden inputs
+                const includedServices = collectArrayData('included-services-container');
+                const notIncludedServices = collectArrayData('not-included-services-container');
+                const notes = collectArrayData('notes-container');
+                const cancellingRules = collectArrayData('cancelling-rules-container');
+
+                // Create hidden inputs for arrays
+                const form = this;
+                
+                // Remove any existing hidden array inputs
+                form.querySelectorAll('input[name$="_array_data"]').forEach(input => input.remove());
+                
+                // Add new hidden inputs
+                if (includedServices.length > 0) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'included_services';
+                    input.value = JSON.stringify(includedServices);
+                    form.appendChild(input);
+                }
+                
+                if (notIncludedServices.length > 0) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'not_included_services';
+                    input.value = JSON.stringify(notIncludedServices);
+                    form.appendChild(input);
+                }
+                
+                if (notes.length > 0) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'notes';
+                    input.value = JSON.stringify(notes);
+                    form.appendChild(input);
+                }
+                
+                if (cancellingRules.length > 0) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'cancelling_rules';
+                    input.value = JSON.stringify(cancellingRules);
+                    form.appendChild(input);
+                }
+
+                // Validate that at least one hotel and one housing option exist
+                if (planeData.hotel.length === 0) {
+                    e.preventDefault();
+                    alert('يجب إضافة فندق واحد على الأقل');
+                    return;
+                }
+
+                if (planeData.housingOptions.length === 0) {
+                    e.preventDefault();
+                    alert('يجب إضافة خيار غرفة واحد على الأقل');
+                    return;
+                }
+
+            } catch (error) {
+                e.preventDefault();
+                alert('يرجى التأكد من صحة البيانات المدخلة');
+                console.error(error);
+            }
+        });
+        
+        // Dynamic offer type options based on trip type
+        const typeSelect = document.querySelector('select[name="type"]');
+        const offerTypeSelect = document.querySelector('select[name="offer_type"]');
+        
+        const offerTypeOptions = {
+            'omrah': [
+                { value: 'اقتصادي', text: 'اقتصادي' },
+                { value: 'مميز', text: 'مميز' },
+                { value: 'فاخر', text: 'فاخر' }
+            ],
+            '7ag': [
+                { value: 'اقتصادي', text: 'اقتصادي' },
+                { value: 'مميز', text: 'مميز' },
+                { value: 'فاخر', text: 'فاخر' }
+            ],
+            'ramadan': [
+                { value: 'اقتصادي', text: 'اقتصادي' },
+                { value: 'مميز', text: 'مميز' },
+                { value: 'فاخر', text: 'فاخر' }
+            ],
+            'external_tour': [
+                { value: 'رحلات بتاشيره', text: 'رحلات بتاشيره' },
+                { value: 'رحلات بدون تاشيره', text: 'رحلات بدون تاشيره' },
+                { value: 'رحلات شهر العسل', text: 'رحلات شهر العسل' }
+            ],
+            'internal_tour': [
+                { value: 'رحلة يوم واحد', text: 'رحلة يوم واحد' },
+                { value: 'رحلة يومين', text: 'رحلة يومين' },
+                { value: 'رحلة أسبوع', text: 'رحلة أسبوع' }
+            ]
+        };
+        
+        // Store current value from server
+        const currentOfferType = '<%= card.offer_type || "" %>';
+        
+        function updateOfferTypeOptions() {
+            const selectedType = typeSelect.value;
+            const options = offerTypeOptions[selectedType] || [];
+            
+            // Clear current options except the first one
+            offerTypeSelect.innerHTML = '<option value="">اختر نوع العرض</option>';
+            
+            // Add new options
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                if (option.value === currentOfferType) {
+                    optionElement.selected = true;
+                }
+                offerTypeSelect.appendChild(optionElement);
+            });
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeSelect && offerTypeSelect) {
+                // Initialize on page load first
+                updateOfferTypeOptions();
+                // Then add change listener
+                typeSelect.addEventListener('change', updateOfferTypeOptions);
+            }
+            
+            // Date validation for edit form
+            const travelDateInput = document.querySelector('input[name="travel_date"]');
+            const offerExpiryInput = document.querySelector('input[name="offer_expiry_date"]');
+            
+            function validateDates() {
+                if (travelDateInput && offerExpiryInput && travelDateInput.value && offerExpiryInput.value) {
+                    const travelDate = new Date(travelDateInput.value);
+                    const expiryDate = new Date(offerExpiryInput.value);
+                    
+                    if (expiryDate >= travelDate) {
+                        offerExpiryInput.setCustomValidity('تاريخ انتهاء العرض يجب أن يكون قبل تاريخ السفر');
+                        offerExpiryInput.style.borderColor = '#ef4444';
+                        return false;
+                    } else {
+                        offerExpiryInput.setCustomValidity('');
+                        offerExpiryInput.style.borderColor = '#34729C';
+                        return true;
+                    }
+                }
+            }
+            
+            if (travelDateInput && offerExpiryInput) {
+                travelDateInput.addEventListener('change', validateDates);
+                offerExpiryInput.addEventListener('change', validateDates);
+                
+                // Set max date for expiry based on travel date
+                travelDateInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const travelDate = new Date(this.value);
+                        travelDate.setDate(travelDate.getDate() - 1); // Set max to one day before travel
+                        offerExpiryInput.max = travelDate.toISOString().split('T')[0];
+                    }
+                });
+                
+                // Set min date for travel based on expiry date
+                offerExpiryInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const expiryDate = new Date(this.value);
+                        expiryDate.setDate(expiryDate.getDate() + 1); // Set min to one day after expiry
+                        travelDateInput.min = expiryDate.toISOString().split('T')[0];
+                    }
+                });
+                
+                // Initial validation
+                validateDates();
+            }
+        });
+    </script>
+</body>
+</html>

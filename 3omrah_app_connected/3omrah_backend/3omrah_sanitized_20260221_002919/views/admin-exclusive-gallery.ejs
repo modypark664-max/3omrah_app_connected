@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تعديل عروض حصريه</title>
+</head>
+<body>
+  <h2>تعديل عروض حصريه (اختر 5 باقات)</h2>
+  <% if (error) { %>
+    <div style="color: red;">حدث خطأ: <%= error.map(e => e.message).join(', ') %></div>
+  <% } %>
+  <form action="/admin/exclusive-gallery" method="POST">
+    <div>
+      <% allCards.forEach(function(card) { %>
+        <div>
+          <label>
+            <input type="checkbox" name="cardIds" value="<%= card._id %>" <%= gallery.includes(card._id.toString()) ? 'checked' : '' %> />
+            <%= card.title %> (<%= card.code %>)
+          </label>
+        </div>
+      <% }) %>
+    </div>
+    <button type="submit">حفظ الباقات المختارة</button>
+    <p style="color: #64748b;">يجب اختيار 5 باقات فقط</p>
+  </form>
+</body>
+</html>

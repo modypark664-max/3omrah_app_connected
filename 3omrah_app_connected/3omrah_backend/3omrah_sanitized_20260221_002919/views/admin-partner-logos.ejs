@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تعديل شعارات الشركاء</title>
+</head>
+<body>
+  <h2>تعديل شعارات الشركاء</h2>
+  <% if (error) { %>
+    <div style="color: red;">حدث خطأ: <%= error.map(e => e.message).join(', ') %></div>
+  <% } %>
+  <form action="/admin/partner-logos" method="POST" enctype="multipart/form-data">
+    <div>
+      <% for (let i = 0; i < 4; i++) { %>
+        <div>
+          <label>شعار رقم <%= i+1 %>:</label>
+          <% if (logos[i]) { %>
+            <img src="<%= logos[i] %>" alt="شعار <%= i+1 %>" style="width:80px;height:40px;object-fit:contain;">
+          <% } %>
+          <input type="file" name="images" accept="image/*">
+          <input type="hidden" name="images" value="<%= logos[i] %>">
+        </div>
+      <% } %>
+    </div>
+    <button type="submit">حفظ الشعارات</button>
+  </form>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title>تسجيل الدخول - منصة العمرة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            color: #1E5470;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            color: #34729C;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1E5470;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1E5470;
+            font-size: 1rem;
+        }
+        
+        input[type="tel"], input[type="password"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            direction: ltr;
+            text-align: right;
+        }
+        
+        input[type="tel"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #34729C;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 114, 156, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        input::placeholder {
+            color: #9ca3af;
+            text-align: right;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #34729C 0%, #1E5470 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 114, 156, 0.3);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 114, 156, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+        
+        .link-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e8ed;
+        }
+        
+        .link-section a {
+            color: #34729C;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .link-section a:hover {
+            color: #1E5470;
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #059669;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: calc(50% + 16px);
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+        
+        .form-group.has-icon input {
+            padding-left: 50px;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .decorative-element {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #34729C, #1E5470);
+            opacity: 0.1;
+        }
+        
+        .decorative-element:first-child {
+            top: -50px;
+            right: -50px;
+        }
+        
+        .decorative-element:last-child {
+            bottom: -50px;
+            left: -50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="decorative-element"></div>
+    <div class="decorative-element"></div>
+    
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo">🕋</div>
+            <div class="subtitle">منصة العمرة والسياحة</div>
+        </div>
+        
+        <h1>تسجيل الدخول</h1>
+        
+        <% if (typeof error_msg !== 'undefined' && error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-error"><%= error_msg %></div>
+        <% } %>
+        
+        <% if (typeof success_msg !== 'undefined' && success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success"><%= success_msg %></div>
+        <% } %>
+        
+        <form action="/login" method="POST">
+            <div class="form-group has-icon">
+                <label for="phoneNumber">رقم الهاتف:</label>
+                <input type="tel" name="phoneNumber" id="phoneNumber" required placeholder="01xxxxxxxxx (11 رقم)" dir="ltr" maxlength="11">
+                <span class="input-icon">📱</span>
+            </div>
+
+            <div class="form-group has-icon">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" name="password" id="password" required placeholder="••••••••">
+                <span class="input-icon">🔒</span>
+            </div>
+
+            <button type="submit" class="btn-login">تسجيل الدخول</button>
+        </form>
+        
+        <div class="link-section">
+            <a href="/signup">ليس لديك حساب؟ سجل الآن</a>
+            <br><br>
+            <a href="/partner">هل أنت شركة سياحة؟ انضم كشريك سياحي</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phoneNumber');
+            const form = document.querySelector('form');
+            
+            // Real-time phone number formatting - only allow digits
+            phoneInput.addEventListener('input', function() {
+                // Remove any non-digit characters
+                this.value = this.value.replace(/\D/g, '');
+                
+                // Limit to 11 characters
+                if (this.value.length > 11) {
+                    this.value = this.value.slice(0, 11);
+                }
+                
+                // Update visual feedback
+                if (this.value.length === 11) {
+                    this.style.borderColor = '#4CAF50';
+                } else {
+                    this.style.borderColor = this.value.length === 0 ? '' : '#f44336';
+                }
+            });
+            
+            // Form validation on submit
+            form.addEventListener('submit', function(e) {
+                const phonePattern = /^[0-9]{11}$/;
+                
+                if (!phonePattern.test(phoneInput.value)) {
+                    e.preventDefault();
+                    alert('رقم الهاتف يجب أن يكون 11 رقم بالضبط');
+                    phoneInput.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
+
+    <%- include('bottom_app_navbar') %>
+</body>
+</html>

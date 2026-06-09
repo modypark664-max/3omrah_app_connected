@@ -1,0 +1,862 @@
+<%
+  const currentUser = typeof user !== 'undefined' ? user : null;
+  const adminPermissions = currentUser && Array.isArray(currentUser.permissions) ? currentUser.permissions : [];
+  const normalizedRole = currentUser && typeof currentUser.role === 'string' ? currentUser.role.toLowerCase() : '';
+  const hasExplicitFullAdminAccess = adminPermissions.includes('full_admin_access');
+  const hasImplicitFullAdminAccess = normalizedRole === 'admin' && adminPermissions.length === 0;
+  const adminHasFullAccess = hasExplicitFullAdminAccess || hasImplicitFullAdminAccess;
+  const hasDelegatedAdminPermissions = adminPermissions.length > 0;
+  const canSeeFullAdminDashboard = Boolean(currentUser && adminHasFullAccess);
+  const canSeeSimplifiedAdminDashboard = Boolean(currentUser && (adminHasFullAccess || hasDelegatedAdminPermissions || normalizedRole === 'admin'));
+  const showLimitedAdminShortcuts = normalizedRole === 'admin' && !adminHasFullAccess && hasDelegatedAdminPermissions;
+%>
+<section id="header-hero" class="header-hero-section" data-current-user='<%- JSON.stringify(user || null).replace(/"/g, '&quot;') %>'>
+  <div class="nav-container">
+    <header class="main-header">
+      <div class="logo">
+        <a href="/">
+          <img src="/imgs/logo.png" alt="">
+        </a>
+      </div>
+      
+      <!-- Hamburger Menu Button -->
+      <button class="hamburger-menu" aria-label="Toggle navigation" aria-expanded="false">
+      <svg fill="gold" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="gold"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M2,4A1,1,0,0,1,3,3H21a1,1,0,0,1,0,2H3A1,1,0,0,1,2,4Zm1,9H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2Zm0,8H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2Z"></path></g></svg>
+      </button>
+      
+      <nav class="main-nav">
+        <ul>
+          <li><a href="/" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/') ? 'active' : '' %>">الرئيسية</a></li>
+          <li><a href="/bundles" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/bundles') ? 'active' : '' %>">باقات العمرة</a></li>
+          <li><a href="/7ag-tours" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/7ag-tours') ? 'active' : '' %>">رحلات الحج</a></li>
+          <li><a href="/ramadan-tours" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/ramadan-tours') ? 'active' : '' %>">رحلات رمضان</a></li>
+          <li><a href="/inner-tours" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/inner-tours') ? 'active' : '' %>">رحلات داخلية</a></li>
+          <li><a href="/external-tours" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/external-tours') ? 'active' : '' %>">رحلات خارجية</a></li>
+          <li><a href="/contact" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/contact') ? 'active' : '' %>">تواصل</a></li>
+          <li><a href="<%= privacyPolicyUrl || '/privacy' %>" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/privacy') ? 'active' : '' %>">سياسة الخصوصية</a></li>
+          <% if (!user) { %>
+          <li><a href="/partner" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/partner') ? 'active' : '' %>">شريك سياحي</a></li>
+          <% } %>
+          <% if (typeof user !== 'undefined' && user) { %>
+          <li><a href="/profile" class="<%= (typeof currentRoute !== 'undefined' && currentRoute === '/profile') ? 'active' : '' %>">الملف الشخصي</a></li>
+          <% } %>
+          <!-- Login/Profile button for mobile -->
+          <% if (typeof user !== 'undefined' && user) { %>
+          <li class="mobile-only"><a href="/logout" class="logout-link">تسجيل الخروج</a></li>
+          <% } else { %>
+          <li class="mobile-only"><a href="/login" class="btn btn-primary login-btn-mobile">تسجيل الدخول</a></li>
+          <% } %>
+        </ul>
+      </nav>
+      
+      <% if (user) { %>
+      <div class="user-menu">
+        <div class="user-info">
+          <span class="username">مرحباً، <%= user.username %></span>
+          <div class="user-dropdown">
+            <a href="/profile">الملف الشخصي</a>
+            <% if (normalizedRole === 'partner') { %>
+            <a href="/partner-dashboard">لوحة تحكم الشريك</a>
+            <% } %>
+            <% if (canSeeFullAdminDashboard) { %>
+            <a href="/admin/dashboard">لوحة التحكم الكاملة</a>
+            <% } %>
+            <% if (canSeeSimplifiedAdminDashboard) { %>
+            <a href="/admin/access">لوحة التحكم المبسطة</a>
+            <% } %>
+            <% if (showLimitedAdminShortcuts) { %>
+                <% if (adminPermissions.some(p => ['add_card', 'edit_card', 'delete_card', 'approve_card', 'view_all_cards'].includes(p))) { %>
+                <a href="/admin/access#cards">إدارة البطاقات</a>
+                <% } %>
+                <% if (adminPermissions.some(p => ['view_users', 'edit_users', 'delete_users', 'manage_user_permissions'].includes(p))) { %>
+                <a href="/admin/access#users">إدارة المستخدمين</a>
+                <% } %>
+                <% if (adminPermissions.some(p => ['view_partners', 'verify_partners', 'suspend_partners'].includes(p))) { %>
+                <a href="/admin/access#partners">إدارة الشركاء</a>
+                <% } %>
+                <% if (adminPermissions.some(p => ['view_reservations', 'verify_payments', 'cancel_payments'].includes(p))) { %>
+                <a href="/admin/access#reservations">إدارة الحجوزات</a>
+                <% } %>
+                <% if (adminPermissions.some(p => ['manage_banners', 'manage_hero_media', 'manage_section_content', 'manage_page_content'].includes(p))) { %>
+                <a href="/admin/access#content">إدارة المحتوى</a>
+                <% } %>
+            <% } %>
+            <a href="/logout">تسجيل الخروج</a>
+          </div>
+        </div>
+      </div>
+      <% } else { %>
+      <a href="/login" class="btn btn-primary login-btn">تسجيل الدخول</a>
+      <% } %>
+    </header>
+
+<script>
+  (function hydrateAppUser(){
+    if (typeof window === 'undefined') return;
+    if (window.__appUser) return;
+    var headerEl = document.querySelector('[data-current-user]');
+    if (!headerEl) return;
+    var payload = headerEl.getAttribute('data-current-user');
+    if (!payload) {
+      window.__appUser = null;
+      return;
+    }
+    try {
+  window.__appUser = JSON.parse(payload.replace(/&quot;/g, '"'));
+    } catch (err) {
+      window.__appUser = null;
+    }
+  })();
+</script>
+
+<style>
+  :root {
+  --color-primary: #1e5470;
+  --color-secondary: #5ec1d1;
+  --color-accent: #8ec1d1;
+  --color-text: #1e5470;
+  --color-text-light: #4a4a4a;
+  --color-white: #ffffff;
+  --color-background: #d3f0f7;
+  --font-tajawal: 'Tajawal', sans-serif;
+  --font-cairo: 'Cairo', sans-serif;
+  --font-kufam: 'Kufam', sans-serif;
+  --font-nunito: 'Nunito', sans-serif;
+  --font-be-vietnam: 'Be Vietnam Pro', sans-serif;
+  --header-height: 60px; /* dynamic override via JS */
+}
+
+/* Only scope navbar specific styles - don't affect global page direction */
+.header-hero-section {
+  background: linear-gradient(180deg, #1e5470 29.81%, #5c8397 60.1%, #d3f0f7 100%);
+  min-height: 100px;
+  position: relative;
+  direction: rtl;
+}
+
+/* Simple header for pages that don't need hero gradient */
+.simple-header {
+  position: relative;
+  direction: rtl;
+  background: transparent;
+  min-height: auto;
+}
+
+.simple-header .main-header {
+  background: linear-gradient(180deg, #1e5470 70%, #4d7c92 100%);
+}
+
+.header-hero-section * {
+  box-sizing: border-box;
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+  direction: rtl;
+}
+
+@media (min-width: 1400px) {
+  .nav-container {
+    max-width: 1400px;
+    padding: 0 30px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .nav-container {
+    max-width: 1140px;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 991px) {
+  .nav-container {
+    max-width: 960px;
+    padding: 0 12px;
+  }
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Reduced padding for more compact navbar */
+  padding: 4px 0; /* reduced from 8px to 4px */
+  position: fixed;
+  top: 0; left: 0; width: 100%;
+  z-index: 1100;
+  direction: rtl;
+  flex-direction: row;
+  min-height: 45px; /* reduced from 50px to 45px */
+  background: linear-gradient(180deg, #1e5470 70%, #4d7c92 100%);
+  transition: padding .25s ease, box-shadow .25s ease, background .3s ease, height .25s ease;
+}
+
+/* Remove hard-coded spacer heights; will be set via JS */
+body.has-sticky-nav #header-spacer { height: 0; }
+
+.main-header.nav-scrolled { padding: 2px 0; box-shadow: 0 4px 18px rgba(0,0,0,.18); }
+.main-header.nav-scrolled .logo img { width: 120px; transition: width .25s ease; }
+@media (max-width: 600px){ .main-header.nav-scrolled .logo img { width: 110px; } }
+
+/* Adjust mobile slide-out menu top offset now that header fixed */
+@media (max-width:768px){
+  .main-nav { top: 0; padding-top: 70px !important; }
+  .main-header.nav-scrolled + .main-nav { padding-top: 60px !important; }
+}
+
+/* Responsive header padding - reduced for compact design */
+@media (max-width: 1199px) {
+  .main-header {
+    padding: 3px 0;
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 991px) {
+  .main-header {
+    padding: 2px 0;
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-header {
+    padding: 2px 0;
+    min-height: 38px;
+  }
+}
+
+/* Force RTL layout order */
+.main-header .logo {
+  order: 1;
+  margin-left: auto;
+}
+
+.main-header .main-nav {
+  order: 2;
+  margin-right: 20px; /* Move navigation closer to user menu */
+}
+
+.main-header .login-btn,
+.main-header .user-menu {
+  order: 3;
+  margin-right: auto; /* Restored to original position */
+}
+
+.main-header .hamburger-menu {
+  order: 4;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo{
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo img{
+  width: 175px;
+  height: auto;
+}
+
+/* Responsive logo sizing */
+@media (max-width: 1199px) {
+  .logo img {
+    width: 130px;
+  }
+}
+
+@media (max-width: 991px) {
+  .logo img {
+    width: 150px;
+  }
+}
+
+@media (max-width: 900px) {
+  .logo img {
+    width: 150px;
+  }
+}
+
+.logo-text-main {
+  font-family: var(--font-tajawal);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .logo-text-main {
+    font-size: 20px;
+  }
+  
+  .nav-container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0 10px;
+  }
+}
+
+.header-hero-section .main-nav ul,
+.simple-header .main-nav ul {
+  display: flex !important;
+  gap: 32px !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  flex-direction: row !important;
+}
+
+/* Responsive navigation spacing and positioning */
+@media (max-width: 1199px) {
+  .header-hero-section .main-nav ul,
+  .simple-header .main-nav ul {
+    gap: 24px !important;
+  }
+  
+  .main-header .main-nav {
+    margin-right: 15px;
+  }
+}
+
+@media (max-width: 991px) {
+  .header-hero-section .main-nav ul,
+  .simple-header .main-nav ul {
+    gap: 20px !important;
+  }
+  
+  .main-header .main-nav {
+    margin-right: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-hero-section .main-nav ul,
+  .simple-header .main-nav ul {
+    gap: 16px !important;
+  }
+  
+  .main-header .main-nav {
+    margin-right: 8px;
+  }
+}
+
+.main-nav a {
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.3s ease;
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Responsive font sizes for navigation */
+@media (max-width: 1199px) {
+  .main-nav a {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 991px) {
+  .main-nav a {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-nav a {
+    font-size: 13px;
+  }
+}
+
+.main-nav a:hover {
+  color: var(--color-secondary);
+}
+
+.main-nav a.active {
+  color: var(--color-secondary);
+}
+
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--color-secondary);
+  transition: width 0.3s ease;
+}
+
+.main-nav a:hover::after,
+.main-nav a.active::after {
+  width: 100%;
+}
+
+/* Navbar specific button styles - much smaller login button */
+.header-hero-section .btn,
+.simple-header .btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 14px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.header-hero-section .btn-primary,
+.simple-header .btn-primary {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15);
+}
+
+.header-hero-section .btn-primary:hover,
+.simple-header .btn-primary:hover {
+  background-color: #4ab0c0;
+  transform: translateY(-1px);
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive button sizing for different desktop widths */
+@media (max-width: 1199px) {
+  .header-hero-section .btn,
+  .simple-header .btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 991px) {
+  .header-hero-section .btn,
+  .simple-header .btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-hero-section .btn,
+  .simple-header .btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-hero-section .btn,
+  .simple-header .btn {
+    padding: 18px 32px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-hero-section .btn,
+  .simple-header .btn {
+    padding: 14px 24px;
+    font-size: 13px;
+  }
+}
+
+.login-btn-mobile {
+  display: none;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  position: relative;
+  cursor: pointer;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.user-info:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.username {
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Responsive user menu sizing */
+@media (max-width: 1199px) {
+  .user-info {
+    padding: 6px 14px;
+  }
+  
+  .username {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 991px) {
+  .user-info {
+    padding: 5px 12px;
+  }
+  
+  .username {
+    font-size: 11px;
+  }
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  margin-top: 8px;
+}
+
+.user-info:hover .user-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 12px 16px;
+  color: var(--color-text);
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.user-dropdown a:hover {
+  background-color: #f8fafc;
+}
+
+.user-dropdown a:last-child {
+  border-bottom: none;
+  color: #dc2626;
+}
+
+.user-dropdown a:last-child:hover {
+  background-color: #fef2f2;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+@media (max-width: 768px) {
+  .login-btn { display: none !important; }
+  .user-menu { display: none !important; }
+  .mobile-only { display: block !important; }
+  .hamburger-menu { display: flex; }
+  .hamburger-menu svg { width: 32px !important; height: 32px !important; margin-left: 30px !important; background: none !important; }
+  .header-hero-section .main-nav ul,
+  .simple-header .main-nav ul { gap: 20px !important; }
+  .main-nav {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1e5470 0%, #5c8397 100%);
+      transition: right 0.3s ease;
+      z-index: 999;
+      padding-top: 0 !important; /* will be overridden below */
+      order: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      margin-top: 0; /* removed old 40px gap */
+    }
+    .main-nav.active { right: 0; }
+    .header-hero-section .main-nav ul,
+    .simple-header .main-nav ul {
+      flex-direction: column !important;
+      gap: 20px !important;
+      padding: 32px 20px 20px 20px !important;
+      align-items: flex-end !important;
+      margin-top: 0 !important;
+      justify-content: flex-start !important;
+      height: auto !important;
+      width: 100% !important;
+      display: flex !important;
+      position: absolute !important;
+      top: 0 !important;
+      right: 0 !important;
+    }
+    .main-nav a { color: white; font-size: 18px; }
+    .main-nav a:hover { color: var(--color-secondary); }
+    .main-nav a.active { color: var(--color-secondary); }
+    .main-nav a.active::after { width: 100%; }
+    .logout-link { color: #fca5a5 !important; }
+    .logout-link:hover { color: #fee2e2 !important; }
+  .main-header { background: transparent !important; box-shadow: none !important; }
+  .hamburger-menu { background: transparent !important; box-shadow: none !important; border: none !important; }
+  /* Use dynamic header height for spacing inside slide menu */
+  .main-nav { padding-top: var(--header-height) !important; }
+}
+
+/* Additional breakpoint for very narrow desktop screens */
+@media (max-width: 820px) and (min-width: 769px) {
+  .header-hero-section .main-nav ul,
+  .simple-header .main-nav ul {
+    gap: 12px !important;
+  }
+  
+  .main-nav a {
+    font-size: 12px;
+  }
+  
+  .header-hero-section .btn,
+  .simple-header .btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  
+  .user-info {
+    padding: 4px 8px;
+  }
+  
+  .username {
+    font-size: 10px;
+  }
+  
+  .logo img {
+    width: 100px;
+  }
+}
+</style>
+
+
+<script src="/socket.io/socket.io.js" defer></script>
+<script src="/js/chat-widget.js" defer></script>
+
+<script>
+// Hamburger menu functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const hamburger = document.querySelector('.hamburger-menu');
+  const nav = document.querySelector('.main-nav');
+  
+  // Fix navbar link ordering based on current page
+  const navUl = document.querySelector('.main-nav ul');
+  const currentPath = window.location.pathname;
+  
+  if (navUl) {
+    // Check if we're on mobile (window width <= 768px)
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      // On mobile, keep the column direction set by CSS
+      navUl.style.removeProperty('flex-direction');
+    } else {
+      // On desktop, force row direction
+      navUl.style.setProperty('flex-direction', 'row', 'important');
+    }
+    
+    // If we're on specific pages, reverse the order to counteract the CSS
+    if (currentPath === '/' || currentPath === '/profile' || currentPath === "/partner" || currentPath === "/partner-dashboard"||currentPath.startsWith('/card/') ) {
+      const listItems = Array.from(navUl.children);
+      // Filter out mobile-only items for desktop ordering calculation
+      const mainNavItems = listItems.filter(item => !item.classList.contains('mobile-only'));
+      
+      if (isMobile) {
+        // On mobile for reversed pages, use normal order (1, 2, 3, 4, 5, 6, 7)
+        // This creates a reversed column effect when combined with flex-direction: column
+        listItems.forEach((item, index) => {
+          item.style.setProperty('order', (index + 1).toString(), 'important');
+        });
+      } else {
+        // On desktop for reversed pages, use reversed order
+        // Reset all items first
+        listItems.forEach(item => {
+          item.style.removeProperty('order');
+        });
+        
+        // Apply reverse order to main navigation items only
+        mainNavItems.forEach((item, index) => {
+          item.style.setProperty('order', (mainNavItems.length - index).toString(), 'important');
+        });
+        
+        // Keep mobile-only items at the end with high order values
+        listItems.filter(item => item.classList.contains('mobile-only')).forEach((item, index) => {
+          item.style.setProperty('order', (mainNavItems.length + index + 1).toString(), 'important');
+        });
+      }
+    } else {
+      // For all other pages, use normal order (both desktop and mobile)
+      const listItems = Array.from(navUl.children);
+      listItems.forEach((item, index) => {
+        item.style.setProperty('order', (index + 1).toString(), 'important');
+      });
+    }
+  }
+  
+  if (hamburger) {
+    hamburger.addEventListener('click', function() {
+      const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+      
+      hamburger.setAttribute('aria-expanded', !isExpanded);
+      hamburger.classList.toggle('active');
+      nav.classList.toggle('active');
+    });
+  }
+  
+  // Close menu when clicking on nav links
+  const navLinks = document.querySelectorAll('.main-nav a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (hamburger) {
+        hamburger.classList.remove('active');
+        nav.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener('click', function(e) {
+    if (hamburger && nav && !hamburger.contains(e.target) && !nav.contains(e.target)) {
+      hamburger.classList.remove('active');
+      nav.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Handle window resize to adjust navbar layout
+  window.addEventListener('resize', function() {
+    if (navUl) {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (isMobile) {
+        // On mobile, remove the forced row direction to allow CSS column
+        navUl.style.removeProperty('flex-direction');
+      } else {
+        // On desktop, force row direction
+        navUl.style.setProperty('flex-direction', 'row', 'important');
+        
+        // Close mobile menu if it's open
+        if (hamburger && nav) {
+          hamburger.classList.remove('active');
+          nav.classList.remove('active');
+          hamburger.setAttribute('aria-expanded', 'false');
+        }
+      }
+      
+      // Reapply ordering logic after resize
+      if (currentPath === '/' || currentPath === '/profile' || currentPath.startsWith('/card/') || currentPath === '/7ag-tours' || currentPath === '/ramadan-tours' || currentPath === '/bundles' || currentPath === "/partner") {
+        const listItems = Array.from(navUl.children);
+        const mainNavItems = listItems.filter(item => !item.classList.contains('mobile-only'));
+        
+        if (isMobile) {
+          // On mobile for reversed pages, use normal order
+          listItems.forEach((item, index) => {
+            item.style.setProperty('order', (index + 1).toString(), 'important');
+          });
+        } else {
+          // On desktop for reversed pages, use reversed order
+          // Reset all items first
+          listItems.forEach(item => {
+            item.style.removeProperty('order');
+          });
+          
+          // Apply reverse order to main navigation items only
+          mainNavItems.forEach((item, index) => {
+            item.style.setProperty('order', (mainNavItems.length - index).toString(), 'important');
+          });
+          
+          // Keep mobile-only items at the end with high order values
+          listItems.filter(item => item.classList.contains('mobile-only')).forEach((item, index) => {
+            item.style.setProperty('order', (mainNavItems.length + index + 1).toString(), 'important');
+          });
+        }
+      } else {
+        // For all other pages, use normal order
+        const listItems = Array.from(navUl.children);
+        listItems.forEach((item, index) => {
+          item.style.setProperty('order', (index + 1).toString(), 'important');
+        });
+      }
+    }
+  });
+});
+
+// Sticky navbar scroll handling (adjusted for dynamic spacer)
+document.addEventListener('DOMContentLoaded', function(){
+  const header = document.querySelector('.main-header');
+  if(!header) return;
+  let spacer = document.getElementById('header-spacer');
+  if(!spacer){
+    spacer = document.createElement('div');
+    spacer.id = 'header-spacer';
+    document.body.classList.add('has-sticky-nav');
+    document.body.prepend(spacer);
+  }
+  function setSpacer(){
+    const h = header.offsetHeight;
+    spacer.style.height = h + 'px';
+    document.documentElement.style.setProperty('--header-height', h + 'px');
+  }
+  const resizeObserver = new ResizeObserver(setSpacer);
+  resizeObserver.observe(header);
+  window.addEventListener('resize', setSpacer);
+  setSpacer();
+  const toggleScrolled = () => {
+    if(window.scrollY > 20){
+      if(!header.classList.contains('nav-scrolled')){ header.classList.add('nav-scrolled'); setSpacer(); }
+    } else {
+      if(header.classList.contains('nav-scrolled')){ header.classList.remove('nav-scrolled'); setSpacer(); }
+    }
+  };
+  toggleScrolled();
+  window.addEventListener('scroll', toggleScrolled, { passive: true });
+});
+</script>

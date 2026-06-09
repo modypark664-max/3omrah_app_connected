@@ -1,0 +1,3 @@
+eas build --platform android --profile preview --local --non-interactive
+npx eas build --platform android --profile production --local
+npx eas build --platform android

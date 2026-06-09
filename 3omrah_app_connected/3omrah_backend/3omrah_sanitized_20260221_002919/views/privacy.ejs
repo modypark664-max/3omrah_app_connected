@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || 'سياسة الخصوصية - منصة العمرة' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;500;700&family=Tajawal:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/privacy.css" />
+    <link rel="icon" type="image/png" href="/imgs/logo.png" />
+  </head>
+  <body class="privacy-page">
+    <% const privacyContactEmail = contactSettings && contactSettings.email ? contactSettings.email : 'info@rehlatty.com'; %>
+    <%- include('navbar'); %>
+
+    <main class="privacy-wrapper" aria-labelledby="privacy-title">
+      <section class="privacy-hero">
+        <div class="hero-content">
+          <p class="eyebrow">وثائق الحماية والامتثال</p>
+          <h1 id="privacy-title">سياسة الخصوصية</h1>
+          <p class="lede">
+            تدير شركة Compass منصة «رحلة العمرة» التي تشمل الموقع الإلكتروني وتطبيق الهواتف المحمولة. يعتمد تشغيل حجوزاتك،
+            التسجيل، ودعم العملاء على معالجة بيانات شخصية محددة نوضحها هنا بالتفصيل، بما في ذلك وسائل جمعها، فترة
+            الاحتفاظ بها، الجهات التي قد تتلقاها، والخيارات المتاحة لك لحمايتها أو حذفها.
+          </p>
+          <div class="meta-row">
+            <div><span>آخر تحديث:</span> 13 ديسمبر 2025</div>
+            <div><span>يسري على:</span> موقع Rehlatty والتطبيق</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-card">
+        <h2>البيانات التي نجمعها</h2>
+        <div class="data-grid">
+          <article>
+            <h3>معلومات الحساب</h3>
+            <p>اسم المستخدم، رقم الهاتف، كلمة المرور (مُشفرة عبر <abbr title="bcrypt">bcrypt</abbr>)، اللغة المفضّلة، صورة الملف الشخصي (اختيارية)،
+              وسجل عمليات تسجيل الدخول الأساسية (التاريخ/الوقت، نوع الجهاز).</p>
+          </article>
+          <article>
+            <h3>بيانات الحجز</h3>
+            <p>أرقام الباقات المحجوزة، أسماء المرافقين التي تُدخلها، تفضيلات السكن، تواريخ السفر، حالة السداد، وملاحظاتك للشركاء أو موظفي الدعم.</p>
+          </article>
+          <article>
+            <h3>الاتصالات</h3>
+            <p>محتوى رسائل الدعم، نماذج الاتصال، محادثات الشات داخل التطبيق، ردود الاستبيانات، وسجل البلاغات أو الشكاوى.</p>
+          </article>
+          <article>
+            <h3>معلومات فنية</h3>
+            <p>نوع الجهاز ونظام التشغيل، ملفات سجل الخادم غير المرتبطة بالهوية، وتقارير الأعطال المرسلة من تطبيق Expo لتحسين الاستقرار.</p>
+          </article>
+          <article>
+            <h3>بيانات الشركاء</h3>
+            <p>لدى شركات السياحة فقط: اسم الشركة، المستندات الرسمية المرفوعة، فروع الاتصال، وأسماء المسؤولين المفوضين.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="privacy-card">
+        <h2>كيف نستخدم بياناتك</h2>
+        <ul class="bullets">
+          <li>إنشاء الحساب والتحقق من الهوية باستخدام رقم الهاتف وإجراء تسجيل الدخول الآمن.</li>
+          <li>معالجة طلبات الحجز وإدارة الحالة المالية، وإرسال الإشعارات عبر التطبيق أو البريد أو واتساب (حسب تفضيلاتك).</li>
+          <li>تقديم الدعم الفني، حل النزاعات، وتوثيق طلبات حذف البيانات.</li>
+          <li>تحليل أداء الباقات ومؤشرات الاستخدام لتحسين العروض، مع تجميع البيانات بشكل مجهول كلما أمكن.</li>
+          <li>الامتثال لالتزامات مكافحة الاحتيال، قوانين الضرائب، ولوائح السفر والحج.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-card" id="terms">
+        <h2>شروط الاستخدام المختصرة</h2>
+        <ul class="bullets">
+          <li>استخدم المنصة لحجز الرحلات القانونية فقط وتقديم معلومات دقيقة عنك وعن مرافقيك.</li>
+          <li>لا يحق لك إعادة بيع الخدمات أو مشاركة بيانات الدخول مع أطراف أخرى دون إذن مكتوب.</li>
+          <li>يجوز لنا تعليق الحسابات المسيئة أو المخالفة لسياسات الحماية أو قوانين التصدير.</li>
+          <li>باستمرارك في استخدام الخدمة، فإنك تقر بالالتزام بجميع القوانين المحلية والدولية المنظمة للسفر ومعالجة البيانات.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-card">
+        <h2>الأساس القانوني للمعالجة</h2>
+        <p>
+          نستند إلى عدة أسس قانونية عند معالجة البيانات الشخصية:
+        </p>
+        <ul class="bullets">
+          <li>تنفيذ العقد: تفعيل الحساب، إتمام الحجز، وإدارة المدفوعات.</li>
+          <li>الالتزام القانوني: حفظ السجلات الضريبية، التحقق من هوية الشركاء، الاستجابة لطلبات الجهات الرسمية.</li>
+          <li>المصلحة المشروعة: تحسين الخدمة، منع إساءة الاستخدام، وإجراء تحليلات داخلية متوازنة مع خصوصيتك.</li>
+          <li>الموافقة: الاشتراك في التنبيهات التسويقية أو مشاركة بيانات إضافية اختيارية (يمكن سحبها في أي وقت).</li>
+        </ul>
+      </section>
+
+      <section class="privacy-card">
+        <h2>متى نشارك البيانات</h2>
+        <p>
+          لا نبيع بياناتك لأي طرف ثالث. نشارك الحد الأدنى اللازم فقط مع الفئات التالية:
+        </p>
+        <ul class="bullets">
+          <li>مزودو البنية التحتية (استضافة الخوادم، قواعد البيانات، التخزين السحابي، مزود البريد الإلكتروني) بهدف تشغيل المنصة.</li>
+          <li>شركات السياحة والفنادق وشركاء النقل المعتمدون لتنفيذ الحجز الذي اخترته.</li>
+          <li>مزوّدو خدمات الاتصالات لإرسال الرسائل النصية أو إشعارات واتساب بعد موافقتك.</li>
+          <li>الجهات التنظيمية أو الأمنية عند وجود التزام قانوني أو أمر قضائي.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-card two-column">
+        <article>
+          <h2>حقوقك واختياراتك</h2>
+          <ul class="bullets">
+            <li>الوصول إلى بياناتك وتحديثها عبر الملف الشخصي أو من خلال فريق الدعم.</li>
+            <li>تنزيل أو الحصول على نسخة من بيانات الحجز عند الطلب (يتم توفيرها خلال 15 يوم عمل).</li>
+            <li>حذف الحساب نهائياً من داخل التطبيق (قسم حذف الحساب) أو عبر البريد، وسيتم معالجة الطلب خلال ‎30‎ يوماً.</li>
+            <li>الاعتراض على استخدام بياناتك لأغراض تسويقية أو سحب موافقتك على الرسائل في أي وقت.</li>
+          </ul>
+        </article>
+        <article>
+          <h2>الاحتفاظ بالبيانات</h2>
+          <p>
+            نحتفظ ببيانات الحساب ما دام حسابك نشطاً. بعد طلب الحذف أو إغلاق الحساب نقوم بإخفاء الهوية أو حذف البيانات خلال 30 يوماً،
+            مع الاحتفاظ بسجلات الحجز والفواتير لمدة تصل إلى 24 شهراً تماشياً مع متطلبات الضرائب ومكافحة الاحتيال. يتم حذف ملفات الشات
+            وسجلات الخطأ بعد 12 شهراً ما لم توجد مشكلة قانونية مفتوحة.
+          </p>
+        </article>
+      </section>
+
+      <section class="privacy-card">
+        <h2>الامتثال لقوانين التصدير الأمريكية</h2>
+        <p>
+          باستخدامك للتطبيق، فإنك تقر بأنك لست مقيماً في دولة خاضعة لحظر تجاري أمريكي وأنك لست مدرجاً ضمن قوائم
+          الكيانات المحظورة الخاصة بوزارة الخزانة أو وزارة التجارة الأمريكية. لا يجوز استخدام منصتنا لأي غرض ينتهك هذه
+          اللوائح.
+        </p>
+      </section>
+
+      <section class="privacy-card">
+        <h2>أمن المعلومات</h2>
+        <p>
+          نعتمد تشفير TLS لجميع الاتصالات، ونستخدم سياسات وصول محدودة لموظفي الدعم، مع مراجعات دورية لسجلات الدخول ونسخ احتياطية مشفرة.
+          بالرغم من اتخاذنا هذه الإجراءات، فإن أي نظام عبر الإنترنت معرض لمخاطر، لذا نوصي باستخدام كلمة مرور قوية وتفعيل قفل الجهاز.
+        </p>
+      </section>
+
+      <section class="privacy-card">
+        <h2>تحديثات هذه السياسة</h2>
+        <p>
+          قد نقوم بتحديث سياسة الخصوصية عند إضافة ميزات جديدة أو استجابة لمتطلبات تنظيمية. سيتم نشر أي تعديلات بارزة داخل هذه الصفحة
+          مع تاريخ «آخر تحديث» محدث، وسيتم إخطار المستخدمين النشطين عبر البريد أو داخل التطبيق عند وجود تغييرات جوهرية.
+        </p>
+      </section>
+
+      <section class="privacy-card contact-card" aria-labelledby="contact-title">
+        <div>
+          <h2 id="contact-title">التواصل معنا</h2>
+          <p>للاستفسار عن هذه السياسة أو لممارسة حقوقك المتعلقة بالبيانات، تواصل معنا عبر:</p>
+          <ul class="contact-list">
+            <% if (typeof contactSettings !== 'undefined' && contactSettings) { %>
+            <% if (contactSettings.phoneNumber) { %>
+            <li>الهاتف: <a href="tel:<%= contactSettings.phoneNumber %>"><%= contactSettings.phoneNumber %></a></li>
+            <% } %>
+            <% if (contactSettings.email) { %>
+            <li>البريد الإلكتروني: <a href="mailto:<%= contactSettings.email %>"><%= contactSettings.email %></a></li>
+            <% } %>
+            <% if (contactSettings.whatsappNumber) { %>
+            <li>واتساب: <a href="https://wa.me/<%= contactSettings.whatsappNumber %>" target="_blank" rel="noopener">التواصل الفوري</a></li>
+            <% } %>
+            <% } %>
+          </ul>
+        </div>
+        <div class="contact-cta">
+          <p>هل تحتاج إلى نسخة PDF أو مستند مترجم؟ يسعدنا تزويدك بها خلال يومي عمل.</p>
+          <a class="cta-button" href="mailto:<%= privacyContactEmail %>">طلب نسخة مكتوبة</a>
+        </div>
+      </section>
+    </main>
+
+    <%- include('footer'); %>
+
+    <script>
+      if (window.location.search.includes('hideNav=true')) {
+        const style = document.createElement('style');
+        style.innerHTML = 'header, nav, .navbar, footer, .footer, .main-footer { display: none !important; } .privacy-wrapper { padding-top: 20px !important; margin-top: 0 !important; } body { padding-top: 0 !important; }';
+        document.head.appendChild(style);
+      }
+    </script>
+  </body>
+</html>

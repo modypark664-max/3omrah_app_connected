@@ -1,0 +1,431 @@
+<% 
+  const now = new Date();
+  const expiryDate = card.offer_expiry_date ? new Date(card.offer_expiry_date) : null;
+  const isExpired = expiryDate && now > expiryDate;
+%>
+<article class="package-card <%= isExpired ? 'expired-card' : '' %>" data-card-id="<%= card._id %>">
+  <% if (isExpired) { %>
+    <div class="expired-overlay">
+      <div class="expired-badge">
+        <span>انتهت صلاحية العرض</span>
+      </div>
+    </div>
+  <% } %>
+  <img
+    src="<%= card.thumbnail %>"
+    alt="<%= card.code %>"
+    class="package-image"
+  />
+  <div class="package-content">
+    <div class="package-info-header">
+      <div class="package-duration">
+        <img src="/imgs/calendar.svg" alt="calendar icon" />
+        <span>أيام <%= card.days %> -</span>
+        <span> ليالي <%= card.nights %> </span>
+      </div>
+    </div>
+    
+    <!-- Travel and Expiry Dates -->
+    <div class="package-dates">
+      <% if (card.travel_date) { %>
+      <div class="date-info travel-date">
+        <span class="date-label">تاريخ السفر:</span>
+        <span class="date-value"><%= new Date(card.travel_date).toLocaleDateString('ar-EG') %></span>
+      </div>
+      <% } %>
+      
+      <% if (card.offer_expiry_date) { %>
+      <div class="date-info expiry-date">
+        <span class="date-label">تاريخ انتهاء العرض:</span>
+        <span class="date-value <%= isExpired ? 'expired' : '' %>">
+          <%= new Date(card.offer_expiry_date).toLocaleDateString('ar-EG') %>
+        </span>
+      </div>
+      <% } %>
+    </div>
+    <h3>
+      <% if (card.type === 'omrah') { %> رحلة العمرة - <%= card.code %> <% }
+      else if (card.type === 'internal_tour') { %> رحلة داخلية - <%= card.code
+      %> <% } else if (card.type === 'external_tour') { %> رحلة خارجية - <%=
+      card.code %> <% } else { %> <%= card.code %> <% } %>
+    </h3>
+    <p>
+      <% if (card.type === 'omrah') { %> رحلة روحانية مميزة من <%=
+      card.going_route %> إلى <%= card.returning_route %> مع شركة <%=
+      card.plane_company %>. تجربة مريحة ومتكاملة لأداء مناسك العمرة بكل يسر
+      وطمأنينة. <% } else if (card.type === 'internal_tour') { %> استكشف جمال
+      مصر من <%= card.going_route %> إلى <%= card.returning_route %> مع شركة <%=
+      card.plane_company %>. رحلة مميزة تجمع بين المتعة والراحة والاستكشاف. <% }
+      else if (card.type === 'external_tour') { %> استكشف العالم من <%=
+      card.going_route %> إلى <%= card.returning_route %> مع شركة <%=
+      card.plane_company %>. رحلة استثنائية تجمع بين الروحانية والاستكشاف. <% }
+      %>
+    </p>
+    <div class="package-price">
+      <span>تبدأ من <%= card.lowest_price %> جنيه مصري</span>
+      <span>للشخص الواحد</span>
+    </div>
+
+    <!-- Card Actions -->
+    <div class="package-actions">
+      <a href="/card/<%= card._id %>" class="package-details-link">
+        <span>عرض التفاصيل</span>
+        <div class="arrow-circle">
+          <img src="/imgs/Frame 94.png" alt="arrow icon" />
+        </div>
+      </a>
+
+      <div class="package-buttons">
+        <!-- Chat Button -->
+        <button
+          class="action-btn chat-btn"
+          type="button"
+          onclick="window.CardChatWidget && window.CardChatWidget.open('<%= card._id %>')"
+          title="اسأل عن الباقة"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5A8.37 8.37 0 0 1 21 11v.5Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8 11h8m-8 3h5"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
+        <!-- Share Button -->
+        <button
+          class="action-btn share-btn"
+          onclick="shareCard('<%= card._id %>', '<%= card.code %>')"
+          title="مشاركة"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 16.08C17.24 16.08 16.56 16.38 16.04 16.85L8.91 12.7C8.96 12.47 9 12.24 9 12C9 11.76 8.96 11.53 8.91 11.3L15.96 7.19C16.5 7.69 17.21 8 18 8C19.66 8 21 6.66 21 5C21 3.34 19.66 2 18 2C16.34 2 15 3.34 15 5C15 5.24 15.04 5.47 15.09 5.7L8.04 9.81C7.5 9.31 6.79 9 6 9C4.34 9 3 10.34 3 12C3 13.66 4.34 15 6 15C6.79 15 7.5 14.69 8.04 14.19L15.16 18.34C15.11 18.55 15.08 18.77 15.08 19C15.08 20.61 16.39 21.92 18 21.92C19.61 21.92 20.92 20.61 20.92 19C20.92 17.39 19.61 16.08 18 16.08Z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+
+        <!-- Compare Button -->
+        <button
+          class="action-btn compare-btn"
+          onclick="redirectToCompare('<%= card._id %>')"
+          title="مقارنة"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17ZM19.5 19.1H4.5V5.1H19.5V19.1ZM19.5 3H4.5C3.4 3 2.5 3.9 2.5 5V19C2.5 20.1 3.4 21 4.5 21H19.5C20.6 21 21.5 20.1 21.5 19V5C21.5 3.9 20.6 3 19.5 3Z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+
+        <!-- Favorite Button -->
+        <% if (typeof user !== 'undefined' && user) { %>
+        <button
+          class="action-btn favorite-btn"
+          data-card-id="<%= card._id %>"
+          onclick="toggleFavorite('<%= card._id %>')"
+          title="إضافة للمفضلة"
+        >
+          <svg
+            class="heart-outline"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 3C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 3C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04096 1.55 8.5C1.54871 9.95904 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.45 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <svg
+            class="heart-filled"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 3C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 3C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04096 1.55 8.5C1.54871 9.95904 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.45 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z"
+            />
+          </svg>
+        </button>
+        <% } else { %>
+        <a
+          href="/login"
+          class="action-btn favorite-btn"
+          title="سجل دخولك لإضافة للمفضلة"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 3C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 3C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04096 1.55 8.5C1.54871 9.95904 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.45 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .package-card.expired-card {
+    display: none !important;
+  }
+
+  .package-dates {
+    margin: 12px 0;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid #1e5470;
+  }
+
+  .date-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+
+  .date-info:last-child {
+    margin-bottom: 0;
+  }
+
+  .date-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .date-value {
+    color: #1e5470;
+    font-weight: 600;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .date-value.expired {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+
+  .travel-date .date-value {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #d1fae5;
+  }
+
+  .expiry-date .date-value {
+    background: #fefbeb;
+    color: #d97706;
+    border-color: #fed7aa;
+  }
+
+  .package-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    gap: 15px;
+  }
+
+  .package-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    background: white;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .chat-btn {
+    border-color: #1e5470;
+    color: #1e5470;
+  }
+
+  .chat-btn:hover {
+    background: #1e5470;
+    color: #fff;
+  }
+
+  .action-btn:hover {
+    border-color: #1e5470;
+    color: #1e5470;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(30, 84, 112, 0.2);
+  }
+
+  .share-btn:hover {
+    background: #f0f9ff;
+  }
+
+  .compare-btn:hover {
+    background: #f0f4ff;
+    border-color: #5b21b6;
+    color: #5b21b6;
+  }
+
+  .favorite-btn:hover {
+    background: #fef2f2;
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+
+  /* Favorite state with high specificity */
+  .package-card .package-actions .package-buttons .favorite-btn.is-favorite,
+  .favorite-btn.is-favorite {
+    background: #fef2f2 !important;
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+  }
+
+  .package-card .package-actions .package-buttons .favorite-btn.is-favorite:hover,
+  .favorite-btn.is-favorite:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: white !important;
+  }
+
+  /* Heart icons visibility */
+  .favorite-btn .heart-filled {
+    display: none;
+  }
+
+  .package-card .package-actions .package-buttons .favorite-btn.is-favorite .heart-outline,
+  .favorite-btn.is-favorite .heart-outline {
+    display: none !important;
+  }
+
+  .package-card .package-actions .package-buttons .favorite-btn.is-favorite .heart-filled,
+  .favorite-btn.is-favorite .heart-filled {
+    display: block !important;
+  }
+
+  /* Loading state */
+  .action-btn.loading {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .action-btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .package-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .package-details-link {
+      justify-content: center;
+    }
+
+    .package-buttons {
+      justify-content: center;
+    }
+
+    .action-btn {
+      width: 45px;
+      height: 45px;
+    }
+
+    .package-dates {
+      margin: 10px 0;
+      padding: 10px;
+    }
+
+    .date-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .date-value {
+      align-self: flex-end;
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+<script>
+// Compare functionality
+function redirectToCompare(cardId) {
+  window.location.href = `/compare?cards=${cardId}`;
+}
+</script>

@@ -1,0 +1,26 @@
+# Everything listed here is excluded from the EAS upload archive.
+# Keep only generated or dependency artifacts so the Expo project files ship with the build.
+
+# Dependency installs happen on the builder
+node_modules
+
+# Local caches and debug artifacts
+.expo
+.expo-shared
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build outputs
+android
+ios
+dist
+build
+web-build
+
+# Misc
+.DS_Store
+Thumbs.db
+*.tgz
+*.tar.gz

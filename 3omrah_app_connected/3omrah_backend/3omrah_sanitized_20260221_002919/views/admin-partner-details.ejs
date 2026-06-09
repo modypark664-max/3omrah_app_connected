@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الشريك - <%= partner.companyName || partner.username %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1E5470;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(30, 84, 112, 0.3);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .partner-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(30, 84, 112, 0.1);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .partner-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        
+        .partner-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .company-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1E5470;
+            margin-bottom: 5px;
+        }
+        
+        .partner-code {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            align-self: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .partner-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #64748b;
+            min-width: 100px;
+        }
+        
+        .detail-value {
+            color: #1E5470;
+            font-weight: 500;
+        }
+        
+        .partner-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-verified {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .status-suspended {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+        }
+        
+        .stat-card.total-cards {
+            border-left-color: #3b82f6;
+        }
+        
+        .stat-card.approved-cards {
+            border-left-color: #10b981;
+        }
+        
+        .stat-card.pending-cards {
+            border-left-color: #f59e0b;
+        }
+        
+        .stat-card.reservations {
+            border-left-color: #8b5cf6;
+        }
+        
+        .stat-card.revenue {
+            border-left-color: #059669;
+        }
+        
+        .stat-card.active-cards {
+            border-left-color: #06b6d4;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(30, 84, 112, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1E5470;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            font-size: 1.8rem;
+            color: #34729C;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #1E5470 0%, #34729C 100%);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: center;
+            color: #334155;
+        }
+        
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .card-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-approved {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .status-pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .status-expired {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+        
+        .payment-status {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .payment-paid {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .payment-pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .payment-cancelled {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px dashed #e2e8f0;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .info-section-title {
+            font-weight: 700;
+            color: #1E5470;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .info-item {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            color: #1E5470;
+            font-weight: 500;
+        }
+        
+        .docs-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .doc-item {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .doc-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .partner-header {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .partner-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                font-size: 0.9rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>تفاصيل الشريك</h1>
+            <a href="/admin/dashboard" class="back-button">
+                ← العودة للوحة التحكم
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Partner Header -->
+        <div class="partner-header">
+            <div class="partner-avatar">
+                <%= (partner.companyName || partner.username).charAt(0).toUpperCase() %>
+            </div>
+            
+            <div class="partner-info">
+                <h2 class="company-name"><%= partner.companyName || partner.username %></h2>
+                <div class="partner-code">كود الشريك: <%= partner.companyCode || 'غير محدد' %></div>
+                <div class="partner-details">
+                    <div class="detail-item">
+                        <span class="detail-label">اسم المستخدم:</span>
+                        <span class="detail-value"><%= partner.username %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">الهاتف:</span>
+                        <span class="detail-value"><%= partner.phoneNumber || partner.phone_number || 'غير محدد' %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">تاريخ التسجيل:</span>
+                        <span class="detail-value"><%= new Date(partner.createdAt).toLocaleDateString('ar-EG') %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">الحالة:</span>
+                        <span class="status-badge <%= partner.isVerified ? 'status-verified' : 'status-suspended' %>">
+                            <%= partner.isVerified ? 'مُفعل' : 'معلق' %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="partner-actions">
+                <a href="/admin/partner/edit/<%= partner._id %>" class="btn btn-primary">تعديل البيانات</a>
+                <% if (partner.isVerified) { %>
+                    <button onclick="suspendPartner('<%= partner._id %>')" class="btn btn-warning">إيقاف الشريك</button>
+                <% } else { %>
+                    <button onclick="verifyPartner('<%= partner._id %>')" class="btn btn-success">تفعيل الشريك</button>
+                <% } %>
+                <button onclick="deletePartner('<%= partner._id %>', '<%= partner.companyName || partner.username %>')" class="btn btn-danger">حذف الشريك</button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card total-cards">
+                <div class="stat-number"><%= stats.totalCards %></div>
+                <div class="stat-label">إجمالي البطاقات</div>
+            </div>
+            <div class="stat-card approved-cards">
+                <div class="stat-number"><%= stats.approvedCards %></div>
+                <div class="stat-label">بطاقات معتمدة</div>
+            </div>
+            <div class="stat-card pending-cards">
+                <div class="stat-number"><%= stats.pendingCards %></div>
+                <div class="stat-label">بطاقات معلقة</div>
+            </div>
+            <div class="stat-card reservations">
+                <div class="stat-number"><%= stats.totalReservations %></div>
+                <div class="stat-label">إجمالي الحجوزات</div>
+            </div>
+            <div class="stat-card revenue">
+                <div class="stat-number"><%= stats.totalRevenue.toLocaleString() %> ر.س</div>
+                <div class="stat-label">إجمالي الإيرادات</div>
+            </div>
+            <div class="stat-card active-cards">
+                <div class="stat-number"><%= stats.activeCards %></div>
+                <div class="stat-label">بطاقات نشطة</div>
+            </div>
+        </div>
+
+        <!-- Partner Information Details -->
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <span class="section-icon">🏢</span>
+                    معلومات الشريك التفصيلية
+                </h3>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-section">
+                    <h4 class="info-section-title">معلومات الشركة</h4>
+                    <div class="info-item">
+                        <span class="info-label">اسم الشركة</span>
+                        <span class="info-value"><%= partner.companyName || 'غير محدد' %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">كود الشركة</span>
+                        <span class="info-value"><%= partner.companyCode || 'غير محدد' %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الممثل القانوني</span>
+                        <span class="info-value"><%= partner.companyRepresentative || 'غير محدد' %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">نوع الباقة</span>
+                        <span class="info-value"><%= partner.partnerPackage || 'غير محدد' %></span>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h4 class="info-section-title">معلومات الاتصال</h4>
+                    <div class="info-item">
+                        <span class="info-label">رقم الهاتف الرئيسي</span>
+                        <span class="info-value"><%= partner.phoneNumber || partner.phone_number || 'غير محدد' %></span>
+                    </div>
+                    <% if (partner.phoneNumbers && Array.isArray(partner.phoneNumbers) && partner.phoneNumbers.length > 0) { %>
+                    <div class="info-item">
+                        <span class="info-label">أرقام هواتف إضافية</span>
+                        <div class="info-value">
+                            <% partner.phoneNumbers.forEach(phone => { %>
+                                <div><%= phone %></div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <% } %>
+                    <div class="info-item">
+                        <span class="info-label">العنوان الأول</span>
+                        <span class="info-value"><%= partner.address1 || 'غير محدد' %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">العنوان الثاني</span>
+                        <span class="info-value"><%= partner.address2 || 'غير محدد' %></span>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h4 class="info-section-title">الفروع والمستندات</h4>
+                    <div class="info-item">
+                        <span class="info-label">عدد الفروع</span>
+                        <span class="info-value"><%= partner.branches || 'غير محدد' %></span>
+                    </div>
+                    <% if (partner.companyDocs && Array.isArray(partner.companyDocs) && partner.companyDocs.length > 0) { %>
+                    <div class="info-item">
+                        <span class="info-label">المستندات</span>
+                        <div class="docs-list">
+                            <% partner.companyDocs.forEach((doc, index) => { %>
+                                <a href="<%= doc %>" target="_blank" class="doc-item">
+                                    مستند <%= index + 1 %>
+                                </a>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Partner Cards -->
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <span class="section-icon">🎫</span>
+                    البطاقات المنشورة (<%= partnerCards.length %>)
+                </h3>
+            </div>
+            
+            <% if (partnerCards && partnerCards.length > 0) { %>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>كود البطاقة</th>
+                            <th>النوع</th>
+                            <th>تاريخ السفر</th>
+                            <th>المدة</th>
+                            <th>السعر</th>
+                            <th>نوع العرض</th>
+                            <th>الحالة</th>
+                            <th>تاريخ الإنشاء</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% partnerCards.forEach(card => { %>
+                        <tr>
+                            <td><strong><%= card.code %></strong></td>
+                            <td><%= card.type %></td>
+                            <td><%= new Date(card.travel_date).toLocaleDateString('ar-EG') %></td>
+                            <td><%= card.days %> أيام / <%= card.nights %> ليالي</td>
+                            <td><%= card.rate.toLocaleString() %> ر.س</td>
+                            <td><%= card.offer_type || 'عادي' %></td>
+                            <td>
+                                <% if (new Date(card.travel_date) < new Date()) { %>
+                                    <span class="card-status status-expired">منتهي</span>
+                                <% } else if (card.isApproved) { %>
+                                    <span class="card-status status-approved">معتمد</span>
+                                <% } else { %>
+                                    <span class="card-status status-pending">معلق</span>
+                                <% } %>
+                            </td>
+                            <td><%= new Date(card.createdAt).toLocaleDateString('ar-EG') %></td>
+                            <td>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                                    <a href="/card/<%= card._id %>" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">عرض</a>
+                                    <% if (!card.isApproved) { %>
+                                        <button onclick="approvePartnerCard('<%= card._id %>', '<%= card.code %>')" class="btn btn-success" style="padding: 5px 10px; font-size: 11px;">اعتماد</button>
+                                        <button onclick="rejectPartnerCard('<%= card._id %>', '<%= card.code %>')" class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">رفض</button>
+                                    <% } else { %>
+                                        <button onclick="revokePartnerCard('<%= card._id %>', '<%= card.code %>')" class="btn btn-warning" style="padding: 5px 10px; font-size: 11px;">إلغاء الاعتماد</button>
+                                    <% } %>
+                                    <button onclick="deletePartnerCard('<%= card._id %>', '<%= card.code %>')" class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">حذف</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% } else { %>
+            <div class="empty-state">
+                <div class="empty-icon">🎫</div>
+                <h4>لا توجد بطاقات</h4>
+                <p>لم ينشر هذا الشريك أي بطاقات بعد</p>
+            </div>
+            <% } %>
+        </div>
+
+        <!-- Reservations -->
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <span class="section-icon">📋</span>
+                    الحجوزات (<%= partnerReservations.length %>)
+                </h3>
+            </div>
+            
+            <% if (partnerReservations && partnerReservations.length > 0) { %>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الحجز</th>
+                            <th>العميل</th>
+                            <th>هاتف العميل</th>
+                            <th>البطاقة</th>
+                            <th>المبلغ</th>
+                            <th>حالة الدفع</th>
+                            <th>تاريخ الحجز</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% partnerReservations.forEach(reservation => { %>
+                        <tr>
+                            <td><strong><%= reservation.reservationNumber %></strong></td>
+                            <td><%= reservation.user ? reservation.user.username : 'غير معروف' %></td>
+                            <td><%= reservation.user ? (reservation.user.phoneNumber || reservation.user.phone_number || 'غير محدد') : 'غير معروف' %></td>
+                            <td><%= reservation.card ? reservation.card.code : 'غير معروف' %></td>
+                            <td><%= reservation.totalAmount ? reservation.totalAmount.toLocaleString() : '0' %> ر.س</td>
+                            <td>
+                                <% if (reservation.paymentStatus === 'paid') { %>
+                                    <span class="payment-status payment-paid">مدفوع</span>
+                                <% } else if (reservation.paymentStatus === 'cancelled') { %>
+                                    <span class="payment-status payment-cancelled">ملغي</span>
+                                <% } else { %>
+                                    <span class="payment-status payment-pending">معلق</span>
+                                <% } %>
+                            </td>
+                            <td><%= new Date(reservation.createdAt).toLocaleDateString('ar-EG') %></td>
+                            <td>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                                    <% if (reservation.paymentStatus !== 'paid') { %>
+                                        <button onclick="verifyPayment('<%= reservation._id %>')" class="btn btn-success" style="padding: 5px 10px; font-size: 11px;">تأكيد الدفع</button>
+                                    <% } else { %>
+                                        <button onclick="cancelPayment('<%= reservation._id %>')" class="btn btn-warning" style="padding: 5px 10px; font-size: 11px;">إلغاء التأكيد</button>
+                                    <% } %>
+                                    <button onclick="deleteReservation('<%= reservation._id %>', '<%= reservation.reservationNumber %>')" class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">حذف</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% } else { %>
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h4>لا توجد حجوزات</h4>
+                <p>لا توجد حجوزات لبطاقات هذا الشريك بعد</p>
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        // Partner management functions
+        async function verifyPartner(partnerId) {
+            if (!confirm('هل أنت متأكد من تفعيل هذا الشريك؟')) return;
+            
+            try {
+                const response = await fetch(`/admin/partner/verify/${partnerId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم تفعيل الشريك بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء تفعيل الشريك');
+            }
+        }
+        
+        async function suspendPartner(partnerId) {
+            if (!confirm('هل أنت متأكد من إيقاف هذا الشريك؟')) return;
+            
+            try {
+                const response = await fetch(`/admin/partner/suspend/${partnerId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم إيقاف الشريك بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء إيقاف الشريك');
+            }
+        }
+        
+        async function deletePartner(partnerId, partnerName) {
+            if (!confirm(`هل أنت متأكد من حذف الشريك "${partnerName}"؟\n\nسيتم حذف جميع بياناته نهائياً!`)) return;
+            
+            try {
+                const response = await fetch(`/admin/partner/delete/${partnerId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم حذف الشريك بنجاح');
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء حذف الشريك');
+            }
+        }
+        
+        // Partner card management functions
+        async function approvePartnerCard(cardId, cardCode) {
+            if (!confirm(`هل أنت متأكد من اعتماد البطاقة "${cardCode}"؟`)) return;
+            
+            try {
+                const response = await fetch(`/admin/partner-card/approve/${cardId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم اعتماد البطاقة بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء اعتماد البطاقة');
+            }
+        }
+        
+        async function rejectPartnerCard(cardId, cardCode) {
+            if (!confirm(`هل أنت متأكد من رفض البطاقة "${cardCode}"؟\n\nسيتم حذفها نهائياً!`)) return;
+            
+            try {
+                const response = await fetch(`/admin/partner-card/reject/${cardId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم رفض البطاقة وحذفها');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء رفض البطاقة');
+            }
+        }
+        
+        async function revokePartnerCard(cardId, cardCode) {
+            if (!confirm(`هل أنت متأكد من إلغاء اعتماد البطاقة "${cardCode}"؟`)) return;
+            
+            try {
+                const response = await fetch(`/admin/partner-card/revoke/${cardId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم إلغاء اعتماد البطاقة');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء إلغاء اعتماد البطاقة');
+            }
+        }
+        
+        async function deletePartnerCard(cardId, cardCode) {
+            if (!confirm(`هل أنت متأكد من حذف البطاقة "${cardCode}"؟\n\nسيتم حذفها نهائياً!`)) return;
+            
+            try {
+                const response = await fetch(`/admin/partner-card/delete/${cardId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم حذف البطاقة بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء حذف البطاقة');
+            }
+        }
+        
+        // Payment verification functions
+        async function verifyPayment(reservationId) {
+            if (!confirm('هل أنت متأكد من تأكيد دفع هذا الحجز؟')) return;
+            
+            try {
+                const response = await fetch(`/admin/reservation/verify-payment/${reservationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم تأكيد الدفع بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء تأكيد الدفع');
+            }
+        }
+        
+        async function cancelPayment(reservationId) {
+            if (!confirm('هل أنت متأكد من إلغاء تأكيد دفع هذا الحجز؟')) return;
+            
+            try {
+                const response = await fetch(`/admin/reservation/cancel-payment/${reservationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم إلغاء تأكيد الدفع بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء إلغاء تأكيد الدفع');
+            }
+        }
+        
+        async function deleteReservation(reservationId, reservationNumber) {
+            if (!confirm(`هل أنت متأكد من حذف الحجز رقم "${reservationNumber}"؟\n\nسيتم حذفه نهائياً!`)) return;
+            
+            try {
+                const response = await fetch(`/admin/reservation/delete/${reservationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('تم حذف الحجز بنجاح');
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء حذف الحجز');
+            }
+        }
+    </script>
+</body>
+</html>

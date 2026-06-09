@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المطارات - لوحة التحكم</title>
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <style>
+        :root {
+            --primary: #1E5470;
+            --secondary: #34729C;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 1.8rem; color: var(--primary); }
+        .back-btn { text-decoration: none; color: var(--secondary); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        .card { background: var(--white); border-radius: 15px; padding: 25px; box-shadow: 0 10px 25px rgba(30, 84, 112, 0.1); border: 1px solid var(--border); margin-bottom: 30px; }
+        .card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; transition: all 0.3s; }
+        input:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(52, 114, 156, 0.1); }
+        
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 0.95rem; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 84, 112, 0.2); }
+        .btn-sm { padding: 8px 15px; font-size: 0.85rem; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th { text-align: right; padding: 15px; border-bottom: 2px solid var(--border); color: var(--secondary); font-size: 0.9rem; }
+        .data-table td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        .data-table tr:hover { background: #f1f5f9; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        .actions { display: flex; gap: 10px; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📍 إدارة المطارات</h1>
+            <a href="/admin/dashboard" class="back-btn">← العودة للوحة التحكم</a>
+        </div>
+
+        <!-- Add Airport Form -->
+        <div class="card">
+            <div class="card-title">➕ إضافة مطار جديد</div>
+            <form action="/admin/airports/add" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>كود المطار (مثلاً: CAI)</label>
+                        <input type="text" name="code" required placeholder="CAI">
+                    </div>
+                    <div class="form-group">
+                        <label>اسم المطار (عربي)</label>
+                        <input type="text" name="name" required placeholder="مطار القاهرة">
+                    </div>
+                    <div class="form-group">
+                        <label>اسم المطار (إنجليزي)</label>
+                        <input type="text" name="englishName" placeholder="Cairo Airport">
+                    </div>
+                    <div class="form-group">
+                        <label>المدينة</label>
+                        <input type="text" name="city" placeholder="القاهرة">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">إضافة المطار</button>
+            </form>
+        </div>
+
+        <!-- Airports List -->
+        <div class="card">
+            <div class="card-title">📋 قائمة المطارات</div>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>الاسم (عربي)</th>
+                            <th>المدينة</th>
+                            <th>الحالة</th>
+                            <th>العمليات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% airports.forEach(airport => { %>
+                        <tr>
+                            <td><strong><%= airport.code %></strong></td>
+                            <td><%= airport.name %></td>
+                            <td><%= airport.city %></td>
+                            <td>
+                                <span class="badge <%= airport.isActive ? 'badge-success' : 'badge-danger' %>">
+                                    <%= airport.isActive ? 'نشط' : 'غير نشط' %>
+                                </span>
+                            </td>
+                            <td class="actions">
+                                <button class="btn btn-primary btn-sm" onclick="editAirport('<%= airport._id %>', '<%= airport.code %>', '<%= airport.name %>', '<%= airport.englishName %>', '<%= airport.city %>', <%= airport.isActive %>)">تعديل</button>
+                                <form action="/admin/airports/delete/<%= airport._id %>" method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
+                                    <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="card-title">✏️ تعديل المطار</div>
+            <form id="editForm" method="POST">
+                <div class="form-group">
+                    <label>كود المطار</label>
+                    <input type="text" name="code" id="editCode" required>
+                </div>
+                <div class="form-group">
+                    <label>اسم المطار (عربي)</label>
+                    <input type="text" name="name" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>اسم المطار (إنجليزي)</label>
+                    <input type="text" name="englishName" id="editEnglishName">
+                </div>
+                <div class="form-group">
+                    <label>المدينة</label>
+                    <input type="text" name="city" id="editCity">
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" name="isActive" id="editActive" style="width: auto;">
+                    <label style="margin: 0;">نشط</label>
+                </div>
+                <div class="actions" style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function editAirport(id, code, name, englishName, city, isActive) {
+            document.getElementById('editForm').action = '/admin/airports/edit/' + id;
+            document.getElementById('editCode').value = code;
+            document.getElementById('editName').value = name;
+            document.getElementById('editEnglishName').value = englishName;
+            document.getElementById('editCity').value = city;
+            document.getElementById('editActive').checked = isActive;
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

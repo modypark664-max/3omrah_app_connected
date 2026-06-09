@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/imgs/logo.png">
+    <link rel="apple-touch-icon" href="/imgs/logo.png">
+    
+    <title><%= title %> - منصة العمرة</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            direction: rtl;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            overflow-x: auto;
+        }
+
+        .compare-header {
+            background: linear-gradient(135deg, #5D5FEF 0%, #4338ca 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(93, 95, 239, 0.3);
+        }
+
+        .compare-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .compare-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 1.5rem;
+            border-bottom: 3px solid #5D5FEF;
+        }
+
+        .add-cards-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .add-card-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .card-selector {
+            display: none;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .card-selector.active {
+            display: flex;
+        }
+
+        .selectable-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .selectable-card:hover {
+            border-color: #5D5FEF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(93, 95, 239, 0.2);
+        }
+
+        .selectable-card h4 {
+            color: #5D5FEF;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .selectable-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .comparison-grid {
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .comparison-row {
+            display: table-row;
+        }
+
+        .grid-cell {
+            display: table-cell;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            vertical-align: middle;
+            text-align: center;
+            min-height: 60px;
+            position: relative;
+        }
+
+        .row-header {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #5D5FEF;
+            text-align: right;
+            padding-right: 1.5rem;
+            width: 200px;
+            min-width: 200px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #5D5FEF 0%, #4338ca 100%);
+            color: white;
+            font-weight: 700;
+            border: 1px solid #5D5FEF;
+            padding: 1.5rem 1rem;
+            position: relative;
+            text-align: center;
+        }
+
+        .card-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin: 0 auto 0.5rem;
+            display: block;
+        }
+
+        .card-code {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-type {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .remove-card-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .remove-card-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.1);
+        }
+
+        .add-column {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border: 2px dashed #94a3b8;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .add-column:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            border-color: #5D5FEF;
+            color: #5D5FEF;
+        }
+
+        .add-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .price-cell {
+            font-weight: 700;
+            color: #059669;
+            font-size: 1.1rem;
+        }
+
+        .highlight-row {
+            background: #fef3c7 !important;
+        }
+
+        .highlight-row .grid-cell {
+            background: #fef3c7;
+        }
+
+        .highlight-row .row-header {
+            background: #fbbf24;
+            color: #92400e;
+        }
+
+        .highlight-row .add-column {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                overflow-x: auto;
+            }
+
+            .comparison-table {
+                min-width: 800px;
+            }
+
+            .comparison-grid {
+                font-size: 0.9rem;
+            }
+
+            .grid-cell {
+                padding: 0.75rem 0.5rem;
+                min-height: 50px;
+            }
+
+            .row-header {
+                min-width: 150px;
+                width: 150px;
+                padding-right: 1rem;
+            }
+
+            .card-header {
+                padding: 1rem 0.5rem;
+                min-width: 180px;
+            }
+
+            .card-image {
+                width: 40px;
+                height: 40px;
+            }
+
+            .compare-header h1 {
+                font-size: 2rem;
+            }
+
+            .add-cards-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-button {
+                display: block;
+                margin: 0.5rem 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .comparison-table {
+                min-width: 700px;
+            }
+
+            .comparison-grid {
+                font-size: 0.8rem;
+            }
+
+            .grid-cell {
+                padding: 0.5rem 0.25rem;
+                min-height: 45px;
+            }
+
+            .row-header {
+                min-width: 120px;
+                width: 120px;
+                padding-right: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .card-header {
+                min-width: 150px;
+            }
+        }
+
+        /* Actions section */
+        .actions-section {
+            padding: 2rem;
+            text-align: center;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #5D5FEF 0%, #4338ca 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(93, 95, 239, 0.3);
+        }
+
+        .secondary-button {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+
+        .secondary-button:hover {
+            box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid #5D5FEF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Fix hamburger menu on desktop */
+        .hamburger-menu {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-menu {
+                display: flex !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('navbar') %>
+    
+    <div class="compare-header">
+        <div class="container">
+            <h1>جدول المقارنة الرئيسي</h1>
+            <p>
+                قارن بين 
+                <% if (cards.length > 0) { %>
+                    <% if (cards[0].type === 'omrah') { %>
+                        باقات العمرة
+                    <% } else if (cards[0].type === 'internal_tour') { %>
+                        الرحلات الداخلية
+                    <% } else if (cards[0].type === 'external_tour') { %>
+                        الرحلات الخارجية
+                    <% } else { %>
+                        الباقات
+                    <% } %>
+                <% } else { %>
+                    الباقات المختلفة
+                <% } %>
+                لاختيار الأنسب لك
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="comparison-table">
+            <div class="table-header">
+                <div class="add-cards-section">
+                    <h2>مقارنة الباقات</h2>
+                    <button class="add-card-btn" onclick="toggleCardSelector()">
+                        <span>+</span>
+                        إضافة باقة للمقارنة
+                    </button>
+                </div>
+                
+                <div class="card-selector" id="cardSelector">
+                    <p>جاري تحميل الباقات المتاحة...</p>
+                </div>
+            </div>
+
+            <div class="comparison-grid" id="comparisonGrid">
+                <!-- Header Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header"></div>
+                    <% cards.forEach((card, index) => { %>
+                    <div class="grid-cell card-header" data-card-id="<%= card._id %>">
+                        <% if (index > 0) { %>
+                        <button class="remove-card-btn" onclick="removeCard('<%= card._id %>')" title="إزالة من المقارنة">×</button>
+                        <% } %>
+                        <img src="<%= card.thumbnail %>" alt="<%= card.code %>" class="card-image">
+                        <div class="card-code"><%= card.code %></div>
+                        <div class="card-type">
+                            <% if (card.type === 'omrah') { %>رحلة العمرة<% } 
+                               else if (card.type === 'internal_tour') { %>رحلة داخلية<% } 
+                               else if (card.type === 'external_tour') { %>رحلة خارجية<% } 
+                               else { %>رحلة<% } %>
+                        </div>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">
+                        <div class="add-icon">+</div>
+                        <div>إضافة باقة</div>
+                    </div>
+                </div>
+
+                <!-- Company Name Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">اسم شركة السياحة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell"><%= card.company || 'غير محدد' %></div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Package Type Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">نوع البرنامج</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell"><%= card.offer_type || 'غير محدد' %></div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Duration Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">مدة الرحلة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell"><%= card.days %> أيام / <%= card.nights %> ليالي</div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Travel Date Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">تاريخ الانطلاق والعودة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% if (card.travel_date) { %>
+                            من <%= new Date(card.travel_date).toLocaleDateString('ar-EG') %> إلى <%= new Date(new Date(card.travel_date).getTime() + (card.days * 24 * 60 * 60 * 1000)).toLocaleDateString('ar-EG') %>
+                        <% } else { %>
+                            غير محدد
+                        <% } %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Booking Deadline Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">الموعد النهائي للحجز</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% if (card.offer_expiry_date) { %>
+                            <%= new Date(card.offer_expiry_date).toLocaleDateString('ar-EG') %>
+                        <% } else { %>
+                            غير محدد
+                        <% } %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Airlines Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">شركة الطيران</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell"><%= card.plane_company || 'غير محدد' %></div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Route Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">خط السير</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% if (card.going_route && card.returning_route) { %>
+                            <%= card.going_route %> - <%= card.returning_route %>
+                        <% } else { %>
+                            غير محدد
+                        <% } %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Hotel in Mecca Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">اسم الفندق في مكة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% 
+                        let meccaHotel = 'غير محدد';
+                        if (card.plane && card.plane.hotel && card.plane.hotel.length > 0) {
+                            const meccaHotels = card.plane.hotel.filter(h => h.location && h.location.includes('مكة'));
+                            if (meccaHotels.length > 0) {
+                                meccaHotel = meccaHotels[0].hotel;
+                            } else if (card.plane.hotel[0] && card.plane.hotel[0].hotel) {
+                                meccaHotel = card.plane.hotel[0].hotel;
+                            }
+                        }
+                        %>
+                        <%= meccaHotel %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Hotel Details Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">تفاصيل الفندق</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% 
+                        let hotelDetails = 'غير محدد';
+                        if (card.plane && card.plane.hotel && card.plane.hotel.length > 0) {
+                            const hotel = card.plane.hotel[0];
+                            let details = [];
+                            if (hotel.hotel_type) details.push(hotel.hotel_type);
+                            if (hotel.comes_with_food) details.push('يشمل الطعام');
+                            hotelDetails = details.length > 0 ? details.join(' - ') : 'فندق سياحي';
+                        }
+                        %>
+                        <%= hotelDetails %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Nights in Mecca Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">عدد ليالي الإقامة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell"><%= card.nights %> ليالي</div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Hotel in Medina Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">اسم الفندق في المدينة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% 
+                        let medinaHotel = 'غير محدد';
+                        if (card.plane && card.plane.hotel && card.plane.hotel.length > 1) {
+                            const medinaHotels = card.plane.hotel.filter(h => h.location && h.location.includes('المدينة'));
+                            if (medinaHotels.length > 0) {
+                                medinaHotel = medinaHotels[0].hotel;
+                            } else if (card.plane.hotel[1] && card.plane.hotel[1].hotel) {
+                                medinaHotel = card.plane.hotel[1].hotel;
+                            }
+                        }
+                        %>
+                        <%= medinaHotel %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Program Includes Row -->
+                <div class="comparison-row">
+                    <div class="grid-cell row-header">يشمل البرنامج</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell">
+                        <% if (card.type === 'omrah') { %>
+                            تذاكر الطيران - الإقامة - التنقلات - زيارة المسجد الحرام - زيارة المسجد النبوي - جولات دينية
+                        <% } else if (card.type === 'internal_tour') { %>
+                            تذاكر الطيران الداخلي - الإقامة - وجبات الإفطار - التنقلات - دليل سياحي - جولات سياحية
+                        <% } else if (card.type === 'external_tour') { %>
+                            تذاكر الطيران - الإقامة - بعض الوجبات - التنقلات - تأشيرة السفر - دليل سياحي
+                        <% } else { %>
+                            تذاكر الطيران - الإقامة - وجبة الإفطار - التنقلات - خدمة العملاء
+                        <% } %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+
+                <!-- Price Row (Highlighted) -->
+                <div class="comparison-row highlight-row">
+                    <div class="grid-cell row-header">الأسعار والتكلفة</div>
+                    <% cards.forEach(card => { %>
+                    <div class="grid-cell price-cell">
+                        <% if (card.lowest_price) { %>
+                            <%= card.lowest_price %> جنيه
+                        <% } else { %>
+                            غير محدد
+                        <% } %>
+                    </div>
+                    <% }) %>
+                    <div class="grid-cell add-column" onclick="toggleCardSelector()">-</div>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <a href="/bundles" class="action-button secondary-button">العودة للباقات</a>
+                <% cards.forEach(card => { %>
+                <a href="/card/<%= card._id %>" class="action-button">تفاصيل <%= card.code %></a>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+        <%- include('footer') %>
+    <%- include('bottom_app_navbar') %>
+    <script>
+        let currentCards = <%- JSON.stringify(cards.map(c => c._id)) %>;
+        let currentCardsData = <%- JSON.stringify(cards) %>;
+        let availableCards = [];
+        let selectorOpen = false;
+
+        // Load available cards for selection - filtered by type
+        async function loadAvailableCards() {
+            try {
+                const firstCardType = currentCardsData.length > 0 ? currentCardsData[0].type : null;
+                const params = new URLSearchParams();
+                if (firstCardType) {
+                    params.append('type', firstCardType);
+                }
+                if (currentCards.length > 0) {
+                    params.append('exclude', currentCards.join(','));
+                }
+                params.append('limit', '200');
+
+                const query = params.toString();
+                const response = await fetch(`/api/cards/available${query ? `?${query}` : ''}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch cards');
+                }
+
+                const fetchedCards = await response.json();
+                availableCards = fetchedCards.filter(card => !currentCards.includes(card._id));
+                renderCardSelector();
+            } catch (error) {
+                console.error('Error loading cards:', error);
+                document.getElementById('cardSelector').innerHTML = '<p>حدث خطأ في تحميل الباقات</p>';
+            }
+        }
+
+        function renderCardSelector() {
+            const selector = document.getElementById('cardSelector');
+            
+            if (availableCards.length === 0) {
+                const firstCardType = currentCardsData.length > 0 ? currentCardsData[0].type : null;
+                let typeNameAr = '';
+                
+                switch(firstCardType) {
+                    case 'omrah':
+                        typeNameAr = 'العمرة';
+                        break;
+                    case 'internal_tour':
+                        typeNameAr = 'الرحلات الداخلية';
+                        break;
+                    case 'external_tour':
+                        typeNameAr = 'الرحلات الخارجية';
+                        break;
+                    default:
+                        typeNameAr = 'نفس النوع';
+                }
+                
+                selector.innerHTML = `<p>لا توجد باقات أخرى من نوع ${typeNameAr} متاحة للمقارنة</p>`;
+                return;
+            }
+
+            selector.innerHTML = availableCards.map(card => {
+                let typeLabel = '';
+                switch(card.type) {
+                    case 'omrah':
+                        typeLabel = 'عمرة';
+                        break;
+                    case 'internal_tour':
+                        typeLabel = 'رحلة داخلية';
+                        break;
+                    case 'external_tour':
+                        typeLabel = 'رحلة خارجية';
+                        break;
+                    default:
+                        typeLabel = 'رحلة';
+                }
+                
+                const price = card.lowest_price ? `${card.lowest_price} جنيه` : 'غير محدد';
+                const offerType = card.offer_type || 'غير محدد';
+                const travelDate = card.travel_date ? new Date(card.travel_date).toLocaleDateString('ar-EG') : 'غير محدد';
+                const tripDays = Number.isFinite(card.days) ? `${card.days} يوم` : 'غير محدد';
+                
+                return `
+                    <div class="selectable-card" onclick="addCardToComparison('${card._id}')">
+                        <h4>${card.code}</h4>
+                        <p>${typeLabel} - ${offerType} - ${price}</p>
+                        <p>تاريخ الإقلاع: ${travelDate}</p>
+                        <p>مدة الرحلة: ${tripDays}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleCardSelector() {
+            const selector = document.getElementById('cardSelector');
+            selectorOpen = !selectorOpen;
+            
+            if (selectorOpen) {
+                selector.classList.add('active');
+                loadAvailableCards();
+            } else {
+                selector.classList.remove('active');
+            }
+        }
+
+        function addCardToComparison(cardId) {
+            if (currentCards.includes(cardId)) return;
+            
+            const newCards = [...currentCards, cardId];
+            const url = `/compare?cards=${newCards.join(',')}`;
+            window.location.href = url;
+        }
+
+        function removeCard(cardId) {
+            if (currentCards.length <= 1) {
+                alert('يجب أن تحتوي المقارنة على باقة واحدة على الأقل');
+                return;
+            }
+            
+            const newCards = currentCards.filter(id => id !== cardId);
+            const url = newCards.length > 0 ? `/compare?cards=${newCards.join(',')}` : '/bundles';
+            window.location.href = url;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Compare page loaded with cards:', currentCards);
+            console.log('First card type:', currentCardsData.length > 0 ? currentCardsData[0].type : 'none');
+            
+            // Test the API endpoint
+            const firstCardType = currentCardsData.length > 0 ? currentCardsData[0].type : null;
+            const debugParams = new URLSearchParams();
+            if (firstCardType) {
+                debugParams.append('type', firstCardType);
+            }
+            if (currentCards.length > 0) {
+                debugParams.append('exclude', currentCards.join(','));
+            }
+
+            fetch(`/api/cards/available${debugParams.toString() ? `?${debugParams.toString()}` : ''}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`Available cards of same type (${firstCardType || 'any'}):`, data.length);
+                })
+                .catch(error => console.error('API test failed:', error));
+        });
+    </script>
+
+
+</body>
+</html>

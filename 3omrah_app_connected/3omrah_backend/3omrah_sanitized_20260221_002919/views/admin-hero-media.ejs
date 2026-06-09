@@ -1,0 +1,22 @@
+<h1>إدارة صور وفيديو الهيدر</h1>
+<form method="POST" enctype="multipart/form-data">
+  <label>نوع الوسائط:
+    <select name="type">
+      <option value="image">صورة</option>
+      <option value="video">فيديو</option>
+    </select>
+  </label>
+  <label>رابط (اختياري إذا لم ترفع ملف): <input type="text" name="url"></label>
+  <label>رفع ملف: <input type="file" name="media"></label>
+  <button type="submit">إضافة</button>
+</form>
+
+<ul>
+  <% media.forEach(m => { %>
+    <li>
+      <%= m.type %> - <%= m.url %> - <%= m.isActive ? 'فعال' : 'غير فعال' %>
+      <form method="POST" action="/admin/hero-media/delete/<%= m._id %>" style="display:inline"><button>حذف</button></form>
+      <form method="POST" action="/admin/hero-media/toggle/<%= m._id %>" style="display:inline"><button><%= m.isActive ? 'تعطيل' : 'تفعيل' %></button></form>
+    </li>
+  <% }) %>
+</ul>
